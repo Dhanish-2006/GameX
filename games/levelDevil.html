@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GameX - Devil Platformer</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#111;
+    font-family:Arial,Helvetica,sans-serif;
+    user-select:none;
+}
+
+canvas{
+    display:block;
+    width:100%;
+    height:100%;
+    background:#111;
+}
+
+#hud{
+    position:fixed;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    display:flex;
+    gap:25px;
+    align-items:center;
+    padding:10px 22px;
+    border-radius:8px;
+    background:rgba(20,20,20,.94);
+    color:#fff;
+    font-size:14px;
+    font-weight:bold;
+    border:1px solid #333;
+}
+
+#hud span{
+    white-space:nowrap;
+}
+
+.red{
+    color:#ff3b30;
+}
+
+#menu{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#111;
+}
+
+.menuBox{
+    width:min(430px,90%);
+    text-align:center;
+    padding:35px 25px;
+}
+
+.menuBox h1{
+    font-size:52px;
+    color:#f33;
+    letter-spacing:2px;
+    margin-bottom:5px;
+}
+
+.menuBox h2{
+    color:#fff;
+    font-size:20px;
+    margin-bottom:25px;
+}
+
+.menuBox p{
+    color:#aaa;
+    line-height:1.7;
+    margin-bottom:25px;
+}
+
+button{
+    border:0;
+    background:#e33;
+    color:white;
+    padding:13px 30px;
+    border-radius:6px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#f44;
+}
+
+.hidden{
+    display:none!important;
+}
+
+#deathFlash{
+    position:fixed;
+    inset:0;
+    z-index:40;
+    background:#f00;
+    opacity:0;
+    pointer-events:none;
+}
+
+#mobileControls{
+    position:fixed;
+    bottom:20px;
+    left:0;
+    width:100%;
+    z-index:25;
+    display:flex;
+    justify-content:space-between;
+    padding:0 25px;
+    pointer-events:none;
+}
+
+.mobileGroup{
+    display:flex;
+    gap:10px;
+}
+
+.mobileBtn{
+    width:62px;
+    height:58px;
+    border-radius:10px;
+    border:1px solid #444;
+    background:rgba(20,20,20,.9);
+    color:#fff;
+    font-size:24px;
+    pointer-events:auto;
+    touch-action:none;
+}
+
+.mobileBtn:active{
+    background:#e33;
+}
+
+@media(min-width:900px){
+    #mobileControls{
+        display:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+    <span>LEVEL <b class="red" id="level">1</b></span>
+    <span>DEATHS <b class="red" id="deaths">0</b></span>
+    <span>CHECKPOINT <b class="red" id="checkpoint">0</b></span>
+</div>
+
+<div id="deathFlash"></div>
+
+<div id="menu">
+    <div class="menuBox">
+        <h1>DEVIL</h1>
+        <h2>GAME X</h2>
+
+        <p>
+            It looks easy.<br>
+            That's the trap.
+            <br><br>
+            <b>A / D</b> or <b>← / →</b> — Move<br>
+            <b>SPACE / W / ↑</b> — Jump<br>
+            <b>R</b> — Restart
+        </p>
+
+        <button id="start">PLAY</button>
+    </div>
+</div>
+
+<div id="mobileControls">
+
+    <div class="mobileGroup">
+        <button class="mobileBtn" id="left">◀</button>
+        <button class="mobileBtn" id="right">▶</button>
+    </div>
+
+    <button class="mobileBtn" id="jump">▲</button>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let W = innerWidth;
+let H = innerHeight;
+
+function resize(){
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+}
+
+addEventListener("resize",resize);
+resize();
+
+const levelText = document.getElementById("level");
+const deathsText = document.getElementById("deaths");
+const checkpointText = document.getElementById("checkpoint");
+const menu = document.getElementById("menu");
+const deathFlash = document.getElementById("deathFlash");
+
+let running = false;
+
+let level = 1;
+let deaths = 0;
+let checkpoint = 0;
+
+let cameraX = 0;
+
+const keys = {};
+
+let jumpRequest = false;
+
+const player = {
+    x:80,
+    y:300,
+    w:28,
+    h:42,
+
+    vx:0,
+    vy:0,
+
+    speed:4.7,
+    jumpPower:-12.8,
+
+    grounded:false,
+    dead:false,
+
+    spawnX:80,
+    spawnY:300
+};
+
+const gravity = .62;
+
+let platforms = [];
+let spikes = [];
+let movingPlatforms = [];
+let fallingPlatforms = [];
+let fakePlatforms = [];
+let goal = null;
+let triggers = [];
+let particles = [];
+
+let levelWidth = 1800;
+
+let gameTime = 0;
+
+
+/* =========================================================
+   LEVEL SYSTEM
+========================================================= */
+
+function clearLevel(){
+
+    platforms=[];
+    spikes=[];
+    movingPlatforms=[];
+    fallingPlatforms=[];
+    fakePlatforms=[];
+    triggers=[];
+    particles=[];
+
+    goal=null;
+
+    cameraX=0;
+
+    player.dead=false;
+    player.vx=0;
+    player.vy=0;
+
+}
+
+function platform(x,y,w,h=35,options={}){
+
+    const p={
+        x,
+        y,
+        w,
+        h,
+        visible:true,
+        solid:true,
+        color:"#303030",
+
+        ...options
+    };
+
+    platforms.push(p);
+
+    return p;
+}
+
+function spike(x,y,w=35,h=28,options={}){
+
+    spikes.push({
+
+        x,
+        y,
+        w,
+        h,
+
+        active:true,
+
+        ...options
+
+    });
+}
+
+function movingPlatform(x,y,w,h,range,speed){
+
+    movingPlatforms.push({
+
+        x,
+        y,
+
+        baseX:x,
+        baseY:y,
+
+        w,
+        h,
+
+        range,
+        speed,
+
+        time:Math.random()*10,
+
+        axis:"x"
+
+    });
+}
+
+function fallingPlatform(x,y,w,h){
+
+    fallingPlatforms.push({
+
+        x,
+        y,
+
+        originalY:y,
+
+        w,
+        h,
+
+        activated:false,
+        vy:0,
+
+        delay:0
+
+    });
+}
+
+function fakePlatform(x,y,w,h){
+
+    fakePlatforms.push({
+
+        x,
+        y,
+        w,
+        h,
+
+        triggered:false,
+        alpha:1
+
+    });
+}
+
+function setGoal(x,y){
+
+    goal={
+        x,
+        y,
+        w:40,
+        h:70,
+
+        originalX:x,
+        originalY:y
+    };
+}
+
+
+/* =========================================================
+   LEVELS
+========================================================= */
+
+function buildLevel(){
+
+    clearLevel();
+
+    if(level===1){
+
+        levelWidth=1800;
+
+        platform(0,520,520,50);
+
+        platform(620,520,350,50);
+
+        platform(1080,520,300,50);
+
+        platform(1490,520,310,50);
+
+        spike(380,492);
+        spike(425,492);
+
+        spike(700,492);
+
+        fakePlatform(820,520,100,50);
+
+        setGoal(1680,450);
+
+    }
+
+    else if(level===2){
+
+        levelWidth=2000;
+
+        platform(0,520,450,50);
+
+        platform(570,520,260,50);
+
+        platform(950,450,250,50);
+
+        platform(1330,520,240,50);
+
+        platform(1700,450,300,50);
+
+        spike(350,492);
+
+        spike(650,492);
+        spike(700,492);
+
+        spike(1020,422);
+
+        fallingPlatform(760,400,90,30);
+
+        setGoal(1900,380);
+
+    }
+
+    else if(level===3){
+
+        levelWidth=2200;
+
+        platform(0,520,400,50);
+
+        platform(520,520,230,50);
+
+        platform(870,420,230,50);
+
+        platform(1220,520,230,50);
+
+        platform(1570,400,240,50);
+
+        platform(1930,520,270,50);
+
+        spike(270,492);
+
+        spike(570,492);
+        spike(620,492);
+
+        spike(920,392);
+
+        spike(1280,492);
+
+        fallingPlatform(730,360,100,30);
+
+        fallingPlatform(1450,300,100,30);
+
+        movingPlatform(1100,300,90,30,100,1.5);
+
+        setGoal(2070,450);
+
+    }
+
+    else if(level===4){
+
+        levelWidth=2500;
+
+        platform(0,520,350,50);
+
+        platform(470,520,230,50);
+
+        platform(850,430,220,50);
+
+        platform(1200,330,200,50);
+
+        platform(1530,430,220,50);
+
+        platform(1900,520,230,50);
+
+        platform(2280,420,220,50);
+
+        spike(260,492);
+
+        spike(520,492);
+
+        spike(570,492);
+
+        spike(900,402);
+
+        spike(1270,302);
+
+        spike(1330,302);
+
+        spike(1600,402);
+
+        spike(1970,492);
+
+        fallingPlatform(700,360,100,30);
+
+        fallingPlatform(1070,260,100,30);
+
+        movingPlatform(1450,260,100,30,100,1.8);
+
+        movingPlatform(1750,350,100,30,120,2);
+
+        setGoal(2420,350);
+
+    }
+
+    else if(level===5){
+
+        levelWidth=2800;
+
+        platform(0,520,320,50);
+
+        platform(430,500,180,50);
+
+        platform(730,420,180,50);
+
+        platform(1030,340,180,50);
+
+        platform(1330,420,180,50);
+
+        platform(1630,500,180,50);
+
+        platform(1930,400,180,50);
+
+        platform(2230,300,180,50);
+
+        platform(2530,500,270,50);
+
+        spike(220,492);
+
+        spike(475,472);
+
+        spike(775,392);
+
+        spike(1075,312);
+
+        spike(1375,392);
+
+        spike(1675,472);
+
+        spike(1975,372);
+
+        spike(2275,272);
+
+        fallingPlatform(610,330,100,30);
+
+        fallingPlatform(910,250,100,30);
+
+        fallingPlatform(1510,280,100,30);
+
+        fallingPlatform(2110,230,100,30);
+
+        movingPlatform(1210,220,90,30,120,2);
+
+        movingPlatform(1810,280,90,30,150,2);
+
+        setGoal(2690,430);
+
+    }
+
+    else if(level===6){
+
+        levelWidth=3100;
+
+        platform(0,520,300,50);
+
+        platform(400,520,160,50);
+
+        platform(680,440,160,50);
+
+        platform(960,360,160,50);
+
+        platform(1240,440,160,50);
+
+        platform(1520,520,160,50);
+
+        platform(1800,400,160,50);
+
+        platform(2080,320,160,50);
+
+        platform(2360,400,160,50);
+
+        platform(2640,520,460,50);
+
+        spike(200,492);
+
+        spike(450,492);
+
+        spike(730,412);
+
+        spike(1010,332);
+
+        spike(1290,412);
+
+        spike(1570,492);
+
+        spike(1850,372);
+
+        spike(2130,292);
+
+        spike(2410,372);
+
+        fallingPlatform(560,300,100,30);
+
+        fallingPlatform(840,230,100,30);
+
+        fallingPlatform(1120,250,100,30);
+
+        fallingPlatform(1400,300,100,30);
+
+        fallingPlatform(1680,250,100,30);
+
+        movingPlatform(1160,180,90,30,130,2);
+
+        movingPlatform(1960,220,90,30,130,2);
+
+        movingPlatform(2500,300,90,30,160,2);
+
+        setGoal(2920,450);
+
+    }
+
+    else{
+
+        createRandomDevilLevel();
+
+    }
+
+    player.spawnX=80;
+    player.spawnY=420;
+
+    player.x=player.spawnX;
+    player.y=player.spawnY;
+
+    updateHUD();
+}
+
+
+/* =========================================================
+   RANDOM HARD LEVELS
+========================================================= */
+
+function createRandomDevilLevel(){
+
+    levelWidth=3500;
+
+    platform(0,520,300,50);
+
+    let x=420;
+
+    for(let i=0;i<14;i++){
+
+        const width=140+Math.random()*100;
+
+        const y=
+            300+
+            Math.random()*210;
+
+        platform(x,y,width,50);
+
+        if(Math.random()<.7){
+
+            spike(
+                x+width*.45,
+                y-28
+            );
+        }
+
+        if(Math.random()<.4){
+
+            fallingPlatform(
+                x-80,
+                y-130,
+                90,
+                28
+            );
+        }
+
+        if(Math.random()<.35){
+
+            movingPlatform(
+                x,
+                y-120,
+                90,
+                28,
+                100,
+                1.5+Math.random()
+            );
+        }
+
+        x+=width+100+Math.random()*80;
+    }
+
+    platform(x,500,400,50);
+
+    setGoal(x+280,430);
+
+    levelWidth=x+500;
+}
+
+
+/* =========================================================
+   TRAPS
+========================================================= */
+
+function activateTraps(){
+
+    gameTime++;
+
+    // LEVEL 1 disappearing floor
+    if(level===1){
+
+        const p=fakePlatforms[0];
+
+        if(p && player.x>p.x-40){
+
+            p.triggered=true;
+        }
+
+        if(p && p.triggered){
+
+            p.alpha-=.06;
+
+            if(p.alpha<=0){
+
+                p.alpha=0;
+
+            }
+        }
+    }
+
+    // LEVEL 2 falling block
+    if(level===2){
+
+        fallingPlatforms.forEach(p=>{
+
+            if(
+                !p.activated &&
+                player.x>p.x-50 &&
+                player.x<p.x+p.w+50
+            ){
+
+                p.activated=true;
+            }
+
+        });
+    }
+
+    // Level 3 moving goal
+    if(level===3 && goal){
+
+        if(player.x>1600){
+
+            goal.x=
+                goal.originalX+
+                Math.sin(gameTime*.04)*120;
+        }
+    }
+
+    // Level 4 surprise spikes
+    if(level===4){
+
+        if(player.x>1100){
+
+            if(!spikes.some(s=>s.x===1180)){
+
+                spike(1180,302,40,28);
+                spike(1340,302,40,28);
+            }
+        }
+    }
+
+    // Level 5 ceiling spikes
+    if(level===5){
+
+        if(player.x>1500){
+
+            if(!spikes.some(s=>s.x===1740)){
+
+                spike(1740,0,40,28);
+                spike(1790,0,40,28);
+                spike(1840,0,40,28);
+            }
+        }
+    }
+
+    // Level 6 disappearing start
+    if(level===6){
+
+        if(player.x>600){
+
+            platforms.forEach(p=>{
+
+                if(
+                    p.x>600 &&
+                    p.x<850 &&
+                    player.x>p.x-20
+                ){
+
+                    p.visible=false;
+                    p.solid=false;
+                }
+
+            });
+
+        }
+    }
+
+    // Advanced levels
+    if(level>=7){
+
+        if(player.x>900){
+
+            if(Math.random()<.015){
+
+                spike(
+                    player.x+250,
+                    492
+                );
+
+            }
+        }
+    }
+}
+
+
+/* =========================================================
+   PHYSICS
+========================================================= */
+
+function rectHit(a,b){
+
+    return(
+        a.x<b.x+b.w &&
+        a.x+a.w>b.x &&
+        a.y<b.y+b.h &&
+        a.y+a.h>b.y
+    );
+}
+
+function updateMovingPlatforms(){
+
+    for(const p of movingPlatforms){
+
+        p.time+=.016*p.speed;
+
+        p.x=
+            p.baseX+
+            Math.sin(p.time)*p.range;
+    }
+}
+
+function updateFallingPlatforms(){
+
+    for(const p of fallingPlatforms){
+
+        if(
+            !p.activated
+        ){
+            continue;
+        }
+
+        p.delay+=1;
+
+        if(p.delay>12){
+
+            p.vy+=.45;
+
+            p.y+=p.vy;
+        }
+    }
+}
+
+function update(){
+
+    if(!running)return;
+
+    if(player.dead)return;
+
+    activateTraps();
+
+    updateMovingPlatforms();
+    updateFallingPlatforms();
+
+    let moving=false;
+
+    if(
+        keys["ArrowLeft"] ||
+        keys["KeyA"]
+    ){
+
+        player.vx=-player.speed;
+        moving=true;
+    }
+
+    if(
+        keys["ArrowRight"] ||
+        keys["KeyD"]
+    ){
+
+        player.vx=player.speed;
+        moving=true;
+    }
+
+    if(!moving){
+
+        player.vx*=.75;
+
+    }
+
+    if(
+        jumpRequest &&
+        player.grounded
+    ){
+
+        player.vy=player.jumpPower;
+
+        player.grounded=false;
+
+    }
+
+    jumpRequest=false;
+
+    player.vy+=gravity;
+
+    const oldY=player.y;
+
+    player.x+=player.vx;
+    player.y+=player.vy;
+
+    if(player.x<0){
+
+        player.x=0;
+        player.vx=0;
+
+    }
+
+    player.grounded=false;
+
+    const solids=[
+        ...platforms,
+        ...movingPlatforms,
+        ...fallingPlatforms
+    ];
+
+    // Normal platforms
+    for(const p of solids){
+
+        if(
+            p.visible===false ||
+            p.solid===false
+        ){
+            continue;
+        }
+
+        const horizontal=
+            player.x+player.w>p.x &&
+            player.x<p.x+p.w;
+
+        const landing=
+            oldY+player.h<=p.y &&
+            player.y+player.h>=p.y &&
+            player.vy>=0;
+
+        if(horizontal && landing){
+
+            player.y=p.y-player.h;
+
+            player.vy=0;
+
+            player.grounded=true;
+
+            if(
+                fallingPlatforms.includes(p)
+            ){
+
+                p.activated=true;
+
+            }
+        }
+
+        // side collision
+        if(
+            rectHit(player,p) &&
+            !landing &&
+            player.y+player.h>p.y+8
+        ){
+
+            if(player.x<p.x){
+
+                player.x=p.x-player.w;
+
+            }else{
+
+                player.x=p.x+p.w;
+
+            }
+
+            player.vx=0;
+        }
+    }
+
+    // Fake platforms
+    for(const p of fakePlatforms){
+
+        if(p.alpha<=0)continue;
+
+        const landing=
+            player.x+player.w>p.x &&
+            player.x<p.x+p.w &&
+            oldY+player.h<=p.y &&
+            player.y+player.h>=p.y &&
+            player.vy>=0;
+
+        if(landing){
+
+            player.y=p.y-player.h;
+
+            player.vy=0;
+
+            player.grounded=true;
+
+            p.triggered=true;
+        }
+    }
+
+    // Spikes
+    for(const s of spikes){
+
+        if(!s.active)continue;
+
+        const hit={
+            x:s.x+5,
+            y:s.y+4,
+            w:s.w-10,
+            h:s.h-4
+        };
+
+        if(rectHit(player,hit)){
+
+            die();
+
+            return;
+        }
+    }
+
+    // Ceiling spikes
+    for(const s of spikes){
+
+        if(s.y!==0)continue;
+
+        const hit={
+            x:s.x+5,
+            y:0,
+            w:s.w-10,
+            h:s.h
+        };
+
+        if(rectHit(player,hit)){
+
+            die();
+
+            return;
+        }
+    }
+
+    // Fake floor disappearing
+    for(const p of fakePlatforms){
+
+        if(
+            p.triggered &&
+            p.alpha<=0 &&
+            player.y>p.y-50
+        ){
+
+            // no platform
+
+        }
+    }
+
+    // Void
+    if(player.y>H+200){
+
+        die();
+
+        return;
+    }
+
+    // Goal
+    if(goal){
+
+        if(rectHit(player,goal)){
+
+            finishLevel();
+
+            return;
+        }
+    }
+
+    cameraX=
+        player.x-
+        W*.35;
+
+    cameraX=Math.max(
+        0,
+        Math.min(
+            cameraX,
+            Math.max(0,levelWidth-W)
+        )
+    );
+
+    updateParticles();
+}
+
+
+/* =========================================================
+   DEATH
+========================================================= */
+
+function die(){
+
+    if(player.dead)return;
+
+    player.dead=true;
+
+    deaths++;
+
+    updateHUD();
+
+    deathFlash.style.opacity="0.65";
+
+    setTimeout(()=>{
+
+        deathFlash.style.opacity="0";
+
+    },90);
+
+    createParticles(
+        player.x+player.w/2,
+        player.y+player.h/2
+    );
+
+    setTimeout(()=>{
+
+        restartCurrentLevel();
+
+    },180);
+
+}
+
+function restartCurrentLevel(){
+
+    buildLevel();
+
+    running=true;
+
+}
+
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finishLevel(){
+
+    running=false;
+
+    checkpoint=level;
+
+    updateHUD();
+
+    createParticles(
+        goal.x,
+        goal.y
+    );
+
+    setTimeout(()=>{
+
+        if(level>=10){
+
+            menu.classList.remove("hidden");
+
+            menu.innerHTML=`
+
+                <div class="menuBox">
+
+                    <h1>YOU WIN</h1>
+
+                    <h2>THE DEVIL LOST</h2>
+
+                    <p>
+                        You completed all 10 levels.<br><br>
+                        Deaths: <b>${deaths}</b>
+                    </p>
+
+                    <button id="again">
+                        PLAY AGAIN
+                    </button>
+
+                </div>
+
+            `;
+
+            document
+                .getElementById("again")
+                .onclick=()=>{
+
+                    level=1;
+                    deaths=0;
+                    checkpoint=0;
+
+                    buildLevel();
+
+                    menu.classList.add("hidden");
+
+                    running=true;
+
+                };
+
+            return;
+
+        }
+
+        level++;
+
+        buildLevel();
+
+        running=true;
+
+    },500);
+
+}
+
+
+/* =========================================================
+   PLAYER DRAW
+========================================================= */
+
+function drawPlayer(){
+
+    const x=player.x-cameraX;
+    const y=player.y;
+
+    // shadow
+    ctx.fillStyle="rgba(0,0,0,.35)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        x+14,
+        y+45,
+        17,
+        4,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    // body
+    ctx.fillStyle="#e93333";
+
+    ctx.fillRect(
+        x+4,
+        y+13,
+        20,
+        23
+    );
+
+    // head
+    ctx.fillStyle="#f1c4a3";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+14,
+        y+8,
+        9,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    // hair
+    ctx.fillStyle="#171717";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+14,
+        y+5,
+        9,
+        Math.PI,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    // eye
+    ctx.fillStyle="#111";
+
+    ctx.fillRect(
+        x+17,
+        y+7,
+        3,
+        3
+    );
+
+    // legs
+    ctx.fillStyle="#c92525";
+
+    ctx.fillRect(
+        x+5,
+        y+35,
+        7,
+        8
+    );
+
+    ctx.fillRect(
+        x+17,
+        y+35,
+        7,
+        8
+    );
+}
+
+
+/* =========================================================
+   DRAW WORLD
+========================================================= */
+
+function drawBackground(){
+
+    ctx.fillStyle="#111";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    // subtle horizontal lines
+    ctx.strokeStyle="#181818";
+
+    for(
+        let y=0;
+        y<H;
+        y+=50
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(0,y);
+        ctx.lineTo(W,y);
+
+        ctx.stroke();
+    }
+}
+
+function drawPlatforms(){
+
+    for(const p of platforms){
+
+        if(!p.visible)continue;
+
+        const x=p.x-cameraX;
+
+        if(
+            x+p.w<0 ||
+            x>W
+        )continue;
+
+        ctx.fillStyle="#303030";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            p.h
+        );
+
+        ctx.fillStyle="#4a4a4a";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            5
+        );
+    }
+
+    // fake platforms
+    for(const p of fakePlatforms){
+
+        const x=p.x-cameraX;
+
+        if(p.alpha<=0)continue;
+
+        ctx.globalAlpha=p.alpha;
+
+        ctx.fillStyle="#303030";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            p.h
+        );
+
+        ctx.fillStyle="#4a4a4a";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            5
+        );
+
+        ctx.globalAlpha=1;
+    }
+}
+
+function drawMovingPlatforms(){
+
+    for(const p of movingPlatforms){
+
+        const x=p.x-cameraX;
+
+        ctx.fillStyle="#383838";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            p.h
+        );
+
+        ctx.fillStyle="#666";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            5
+        );
+    }
+}
+
+function drawFallingPlatforms(){
+
+    for(const p of fallingPlatforms){
+
+        const x=p.x-cameraX;
+
+        ctx.fillStyle="#303030";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            p.h
+        );
+
+        ctx.fillStyle="#555";
+
+        ctx.fillRect(
+            x,
+            p.y,
+            p.w,
+            5
+        );
+    }
+}
+
+function drawSpikes(){
+
+    for(const s of spikes){
+
+        const x=s.x-cameraX;
+
+        ctx.fillStyle="#eeeeee";
+
+        ctx.beginPath();
+
+        if(s.y===0){
+
+            ctx.moveTo(x,s.y);
+            ctx.lineTo(x+s.w/2,s.y+s.h);
+            ctx.lineTo(x+s.w,s.y);
+
+        }else{
+
+            ctx.moveTo(x,s.y+s.h);
+            ctx.lineTo(x+s.w/2,s.y);
+            ctx.lineTo(x+s.w,s.y+s.h);
+
+        }
+
+        ctx.closePath();
+
+        ctx.fill();
+    }
+}
+
+function drawGoal(){
+
+    if(!goal)return;
+
+    const x=goal.x-cameraX;
+
+    // door frame
+    ctx.fillStyle="#ddd";
+
+    ctx.fillRect(
+        x,
+        goal.y,
+        goal.w,
+        goal.h
+    );
+
+    // door
+    ctx.fillStyle="#222";
+
+    ctx.fillRect(
+        x+7,
+        goal.y+7,
+        goal.w-14,
+        goal.h-7
+    );
+
+    // handle
+    ctx.fillStyle="#fff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x+30,
+        goal.y+38,
+        3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+}
+
+function drawParticles(){
+
+    for(const p of particles){
+
+        ctx.globalAlpha=p.life;
+
+        ctx.fillStyle="#ff3333";
+
+        ctx.fillRect(
+            p.x-cameraX,
+            p.y,
+            p.size,
+            p.size
+        );
+    }
+
+    ctx.globalAlpha=1;
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function createParticles(x,y){
+
+    for(let i=0;i<25;i++){
+
+        particles.push({
+
+            x,
+            y,
+
+            vx:(Math.random()-.5)*8,
+
+            vy:(Math.random()-.5)*8,
+
+            life:1,
+
+            size:2+Math.random()*4
+
+        });
+    }
+}
+
+function updateParticles(){
+
+    for(const p of particles){
+
+        p.x+=p.vx;
+
+        p.y+=p.vy;
+
+        p.vy+=.15;
+
+        p.life-=.04;
+    }
+
+    particles=
+        particles.filter(
+            p=>p.life>0
+        );
+}
+
+
+/* =========================================================
+   CAMERA + DRAW
+========================================================= */
+
+function draw(){
+
+    drawBackground();
+
+    drawPlatforms();
+
+    drawMovingPlatforms();
+
+    drawFallingPlatforms();
+
+    drawSpikes();
+
+    drawGoal();
+
+    drawPlayer();
+
+    drawParticles();
+
+    // progress bar
+    if(running){
+
+        const progress=
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    player.x/levelWidth
+                )
+            );
+
+        ctx.fillStyle="#252525";
+
+        ctx.fillRect(
+            20,
+            H-20,
+            W-40,
+            4
+        );
+
+        ctx.fillStyle="#e33";
+
+        ctx.fillRect(
+            20,
+            H-20,
+            (W-40)*progress,
+            4
+        );
+    }
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+addEventListener("keydown",e=>{
+
+    keys[e.code]=true;
+
+    if(
+        e.code==="Space" ||
+        e.code==="ArrowUp" ||
+        e.code==="KeyW"
+    ){
+
+        e.preventDefault();
+
+        jumpRequest=true;
+    }
+
+    if(e.code==="KeyR"){
+
+        restartCurrentLevel();
+    }
+
+});
+
+addEventListener("keyup",e=>{
+
+    keys[e.code]=false;
+
+});
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+function mobileButton(id,code,jump=false){
+
+    const btn=document.getElementById(id);
+
+    btn.addEventListener("pointerdown",e=>{
+
+        e.preventDefault();
+
+        keys[code]=true;
+
+        if(jump){
+
+            jumpRequest=true;
+
+        }
+
+    });
+
+    const release=()=>{
+
+        keys[code]=false;
+
+    };
+
+    btn.addEventListener("pointerup",release);
+    btn.addEventListener("pointercancel",release);
+    btn.addEventListener("pointerleave",release);
+}
+
+mobileButton(
+    "left",
+    "ArrowLeft"
+);
+
+mobileButton(
+    "right",
+    "ArrowRight"
+);
+
+mobileButton(
+    "jump",
+    "Space",
+    true
+);
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+    levelText.textContent=level;
+
+    deathsText.textContent=deaths;
+
+    checkpointText.textContent=checkpoint;
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.getElementById("start").onclick=()=>{
+
+    level=1;
+
+    deaths=0;
+
+    checkpoint=0;
+
+    buildLevel();
+
+    menu.classList.add("hidden");
+
+    running=true;
+};
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+function loop(){
+
+    update();
+
+    draw();
+
+    requestAnimationFrame(loop);
+
+}
+
+buildLevel();
+
+loop();
+
+</script>
+
+</body>
+</html>

@@ -656,19 +656,29 @@ function update() {
 
     // Enemy bikes
 
-    enemyBikes.forEach(bike => {
+   enemyBikes.forEach(bike => {
 
-        bike.y +=
-            bike.speed +
-            score * 0.005;
+    // Move enemy bike downward
+    bike.y +=
+        bike.speed +
+        score * 0.005;
 
+    // If player is near the edge,
+    // enemy bike moves toward the player
+    if (player.x < road.x + 80) {
+        bike.x -= 1.5;
+    }
 
-        if (collision(player, bike)) {
+    if (player.x > road.x + road.width - 120) {
+        bike.x += 1.5;
+    }
 
-            endGame();
-        }
+    // Collision
+    if (collision(player, bike)) {
+        endGame();
+    }
 
-    });
+});
 
 
     // Remove enemy bikes

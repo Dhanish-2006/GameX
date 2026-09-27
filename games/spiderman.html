@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Spider-Man Web Swing 3D</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#05080d;
+    font-family:Arial,sans-serif;
+}
+
+canvas{
+    display:block;
+}
+
+#hud{
+    position:fixed;
+    top:15px;
+    left:15px;
+    z-index:20;
+    color:white;
+    background:rgba(0,0,0,.65);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:12px;
+    padding:13px 17px;
+    line-height:1.65;
+    font-size:13px;
+    backdrop-filter:blur(8px);
+}
+
+.title{
+    color:#ff3340;
+    font-weight:bold;
+    font-size:16px;
+}
+
+#status{
+    color:#55ddff;
+    font-weight:bold;
+}
+
+#speed{
+    color:#65d8ff;
+    font-weight:bold;
+}
+
+#crosshair{
+    position:fixed;
+    left:50%;
+    top:50%;
+    width:18px;
+    height:18px;
+    transform:translate(-50%,-50%);
+    z-index:15;
+    pointer-events:none;
+}
+
+#crosshair:before,
+#crosshair:after{
+    content:"";
+    position:absolute;
+    background:white;
+    box-shadow:0 0 5px black;
+}
+
+#crosshair:before{
+    width:2px;
+    height:18px;
+    left:8px;
+    top:0;
+}
+
+#crosshair:after{
+    width:18px;
+    height:2px;
+    left:0;
+    top:8px;
+}
+
+#message{
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    background:rgba(0,0,0,.7);
+    color:white;
+    padding:9px 16px;
+    border-radius:8px;
+    font-size:13px;
+}
+
+#start{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at center,#19375c,#05080d 70%);
+}
+
+#startBox{
+    text-align:center;
+    color:white;
+}
+
+#startBox h1{
+    font-size:52px;
+    letter-spacing:3px;
+    color:#e51d2a;
+    text-shadow:0 0 30px rgba(255,30,40,.6);
+}
+
+#startBox p{
+    color:#bbb;
+    margin:10px 0 25px;
+}
+
+#startBtn{
+    border:0;
+    padding:14px 35px;
+    border-radius:10px;
+    background:#e51d2a;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#startBtn:hover{
+    transform:scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<div id="start">
+    <div id="startBox">
+        <h1>SPIDER WEB</h1>
+        <p>3D Web Swinging</p>
+        <button id="startBtn">START GAME</button>
+    </div>
+</div>
+
+<div id="hud">
+    <div class="title">🕷 SPIDER WEB</div>
+    W A S D — Move<br>
+    Mouse — Look<br>
+    <b>Left Click</b> — Shoot Web<br>
+    <b>Right Click</b> — Release Web<br>
+    Space — Jump<br>
+    Shift — Sprint<br>
+    R — Reset<br>
+    Speed: <span id="speed">0</span> km/h<br>
+    Web: <span id="status">READY</span>
+</div>
+
+<div id="crosshair"></div>
+
+<div id="message">
+    Aim at a building and LEFT CLICK.
+</div>
+
+<script type="importmap">
+{
+    "imports":{
+        "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+}
+</script>
+
+<script type="module">
+
+import * as THREE from "three";
+
+import {
+    PointerLockControls
+} from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
+
+
+/* =========================================================
+   SCENE
+========================================================= */
+
+const scene = new THREE.Scene();
+
+scene.background = new THREE.Color(0x07111d);
+
+scene.fog = new THREE.Fog(
+    0x07111d,
+    250,
+    1500
+);
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+const camera = new THREE.PerspectiveCamera(
+    70,
+    innerWidth / innerHeight,
+    0.1,
+    2500
+);
+
+camera.position.set(
+    0,
+    10,
+    35
+);
+
+
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const renderer = new THREE.WebGLRenderer({
+    antialias:true,
+    powerPreference:"high-performance"
+});
+
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        1.5
+    )
+);
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+    THREE.PCFShadowMap;
+
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+document.body.appendChild(
+    renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHTING
+========================================================= */
+
+const ambient =
+    new THREE.HemisphereLight(
+        0x9dbfff,
+        0x172010,
+        2
+    );
+
+scene.add(ambient);
+
+
+const sun =
+    new THREE.DirectionalLight(
+        0xbdd8ff,
+        2.5
+    );
+
+sun.position.set(
+    -300,
+    500,
+    -250
+);
+
+sun.castShadow = true;
+
+sun.shadow.mapSize.width = 1024;
+sun.shadow.mapSize.height = 1024;
+
+scene.add(sun);
+
+
+/* =========================================================
+   GROUND
+========================================================= */
+
+const ground =
+    new THREE.Mesh(
+        new THREE.PlaneGeometry(
+            4000,
+            4000
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x10161d,
+            roughness:.95
+        })
+    );
+
+ground.rotation.x = -Math.PI / 2;
+
+ground.receiveShadow = true;
+
+scene.add(ground);
+
+
+/* =========================================================
+   ROADS
+========================================================= */
+
+function makeRoad(
+    x,
+    z,
+    width,
+    depth
+){
+
+    const road =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width,
+                .2,
+                depth
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x181c22,
+                roughness:.9
+            })
+        );
+
+    road.position.set(
+        x,
+        .1,
+        z
+    );
+
+    scene.add(road);
+}
+
+makeRoad(
+    0,
+    0,
+    4000,
+    50
+);
+
+makeRoad(
+    0,
+    0,
+    50,
+    4000
+);
+
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
+
+const buildings = [];
+
+const buildingMaterials = [
+
+    new THREE.MeshStandardMaterial({
+        color:0x303741,
+        roughness:.72
+    }),
+
+    new THREE.MeshStandardMaterial({
+        color:0x3d454e,
+        roughness:.7
+    }),
+
+    new THREE.MeshStandardMaterial({
+        color:0x252b33,
+        roughness:.75
+    }),
+
+    new THREE.MeshStandardMaterial({
+        color:0x474d54,
+        roughness:.7
+    })
+];
+
+
+function createBuilding(
+    x,
+    z,
+    width,
+    depth,
+    height
+){
+
+    const building =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width,
+                height,
+                depth
+            ),
+            buildingMaterials[
+                Math.floor(
+                    Math.random() *
+                    buildingMaterials.length
+                )
+            ]
+        );
+
+    building.position.set(
+        x,
+        height / 2,
+        z
+    );
+
+    building.castShadow = true;
+    building.receiveShadow = true;
+
+    scene.add(building);
+
+    buildings.push(building);
+
+
+    /* Rooftop */
+
+    const roof =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width + 2,
+                2,
+                depth + 2
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x171c22,
+                roughness:.65
+            })
+        );
+
+    roof.position.set(
+        x,
+        height + 1,
+        z
+    );
+
+    scene.add(roof);
+
+
+    /* Rooftop antenna */
+
+    if(height > 150){
+
+        const antenna =
+            new THREE.Mesh(
+                new THREE.CylinderGeometry(
+                    .25,
+                    .25,
+                    18,
+                    8
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:0x777777,
+                    metalness:.8,
+                    roughness:.3
+                })
+            );
+
+        antenna.position.set(
+            x,
+            height + 10,
+            z
+        );
+
+        scene.add(antenna);
+    }
+}
+
+
+/* =========================================================
+   CITY
+   LOW OBJECT COUNT FOR PERFORMANCE
+========================================================= */
+
+for(
+    let x = -800;
+    x <= 800;
+    x += 140
+){
+
+    for(
+        let z = -1000;
+        z <= 1000;
+        z += 150
+    ){
+
+        /* Keep central roads open */
+
+        if(
+            Math.abs(x) < 45 ||
+            Math.abs(z) < 45
+        ){
+            continue;
+        }
+
+        createBuilding(
+            x + (Math.random()-.5)*25,
+            z + (Math.random()-.5)*25,
+            75 + Math.random()*35,
+            75 + Math.random()*35,
+            70 + Math.random()*220
+        );
+    }
+}
+
+
+/* =========================================================
+   SOME BUILDING LIGHTS
+   ONLY 20 — NOT HUNDREDS
+========================================================= */
+
+const windowMaterial =
+    new THREE.MeshBasicMaterial({
+        color:0x8fdcff
+    });
+
+for(let i=0;i<20;i++){
+
+    const b =
+        buildings[
+            Math.floor(
+                Math.random() *
+                buildings.length
+            )
+        ];
+
+    const lightBox =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                4,
+                5,
+                .1
+            ),
+            windowMaterial
+        );
+
+    lightBox.position.set(
+        b.position.x,
+        15 + Math.random()*100,
+        b.position.z -
+        b.geometry.parameters.depth/2 -
+        .1
+    );
+
+    scene.add(lightBox);
+}
+
+
+/* =========================================================
+   SPIDER-MAN
+========================================================= */
+
+const hero =
+    new THREE.Group();
+
+hero.position.set(
+    0,
+    5,
+    100
+);
+
+scene.add(hero);
+
+
+/* Materials */
+
+const red =
+    new THREE.MeshStandardMaterial({
+        color:0xd71928,
+        roughness:.42
+    });
+
+const blue =
+    new THREE.MeshStandardMaterial({
+        color:0x102d69,
+        roughness:.45
+    });
+
+const black =
+    new THREE.MeshStandardMaterial({
+        color:0x08090c,
+        roughness:.45
+    });
+
+const white =
+    new THREE.MeshStandardMaterial({
+        color:0xffffff,
+        roughness:.2
+    });
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+const body =
+    new THREE.Mesh(
+        new THREE.CapsuleGeometry(
+            1.55,
+            3.3,
+            8,
+            12
+        ),
+        red
+    );
+
+body.position.y = 4.3;
+
+body.scale.z = .72;
+
+body.castShadow = true;
+
+hero.add(body);
+
+
+/* =========================================================
+   HEAD
+========================================================= */
+
+const head =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            1.35,
+            16,
+            12
+        ),
+        red
+    );
+
+head.position.y = 7.3;
+
+head.castShadow = true;
+
+hero.add(head);
+
+
+/* =========================================================
+   EYES
+========================================================= */
+
+function makeEye(x){
+
+    const eye =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                1,
+                12,
+                8
+            ),
+            white
+        );
+
+    eye.scale.set(
+        .48,
+        .75,
+        .13
+    );
+
+    eye.position.set(
+        x,
+        7.45,
+        -1.22
+    );
+
+    hero.add(eye);
+}
+
+makeEye(-.52);
+makeEye(.52);
+
+
+/* =========================================================
+   ARMS
+========================================================= */
+
+function makeArm(x){
+
+    const arm =
+        new THREE.Group();
+
+    arm.position.set(
+        x,
+        5.2,
+        0
+    );
+
+    const upper =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                .5,
+                2.5,
+                6,
+                8
+            ),
+            blue
+        );
+
+    upper.position.y = -.8;
+
+    upper.castShadow = true;
+
+    arm.add(upper);
+
+
+    const glove =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                .45,
+                1.4,
+                6,
+                8
+            ),
+            red
+        );
+
+    glove.position.y = -2.8;
+
+    glove.castShadow = true;
+
+    arm.add(glove);
+
+    hero.add(arm);
+
+    return arm;
+}
+
+const leftArm =
+    makeArm(-1.9);
+
+const rightArm =
+    makeArm(1.9);
+
+
+/* =========================================================
+   LEGS
+========================================================= */
+
+function makeLeg(x){
+
+    const leg =
+        new THREE.Group();
+
+    leg.position.set(
+        x,
+        2.5,
+        0
+    );
+
+    const upper =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                .6,
+                2.4,
+                6,
+                8
+            ),
+            blue
+        );
+
+    upper.position.y = -1;
+
+    upper.castShadow = true;
+
+    leg.add(upper);
+
+
+    const boot =
+        new THREE.Mesh(
+            new THREE.CapsuleGeometry(
+                .48,
+                1.6,
+                6,
+                8
+            ),
+            red
+        );
+
+    boot.position.y = -3;
+
+    boot.castShadow = true;
+
+    leg.add(boot);
+
+    hero.add(leg);
+
+    return leg;
+}
+
+const leftLeg =
+    makeLeg(-.85);
+
+const rightLeg =
+    makeLeg(.85);
+
+
+/* =========================================================
+   SPIDER EMBLEM
+========================================================= */
+
+const emblem =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .35,
+            8,
+            8
+        ),
+        black
+    );
+
+emblem.scale.set(
+    .7,
+    1.5,
+    .3
+);
+
+emblem.position.set(
+    0,
+    4.5,
+    -1.2
+);
+
+hero.add(emblem);
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+const controls =
+    new PointerLockControls(
+        camera,
+        document.body
+    );
+
+let started = false;
+
+document.getElementById(
+    "startBtn"
+).onclick = () => {
+
+    document.getElementById(
+        "start"
+    ).style.display = "none";
+
+    controls.lock();
+
+    started = true;
+};
+
+
+/* =========================================================
+   KEYS
+========================================================= */
+
+const keys = {};
+
+window.addEventListener(
+    "keydown",
+    e => {
+
+        keys[e.code] = true;
+
+        if(e.code === "Space"){
+
+            e.preventDefault();
+
+            if(player.onGround){
+
+                player.velocity.y =
+                    player.jumpPower;
+
+                player.onGround = false;
+            }
+        }
+
+        if(e.code === "KeyR"){
+            resetPlayer();
+        }
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    e => {
+        keys[e.code] = false;
+    }
+);
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player = {
+
+    velocity:
+        new THREE.Vector3(),
+
+    walkSpeed:45,
+
+    sprintSpeed:70,
+
+    jumpPower:38,
+
+    gravity:50,
+
+    onGround:true
+};
+
+
+/* =========================================================
+   WEB
+========================================================= */
+
+let webActive = false;
+
+let webAnchor =
+    new THREE.Vector3();
+
+let ropeLength = 0;
+
+let webLine = null;
+
+let swingVelocity =
+    new THREE.Vector3();
+
+
+/* =========================================================
+   RAYCAST
+========================================================= */
+
+const raycaster =
+    new THREE.Raycaster();
+
+function shootWeb(){
+
+    /*
+     * IMPORTANT:
+     * Do NOT stop when webActive is true.
+     * Clicking again will attach the web
+     * to a new building.
+     */
+
+    const direction = new THREE.Vector3();
+
+    camera.getWorldDirection(direction);
+
+    raycaster.set(
+        camera.position,
+        direction
+    );
+
+    const hits = raycaster.intersectObjects(
+        buildings,
+        false
+    );
+
+    if(hits.length === 0){
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "Aim directly at a building.";
+
+        return;
+    }
+
+    const hit = hits[0];
+
+    /*
+     * Maximum web distance
+     */
+
+    if(hit.distance > 750){
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "Building is too far.";
+
+        return;
+    }
+
+
+    /*
+     * NEW BUILDING
+     */
+
+    webAnchor.copy(hit.point);
+
+
+    /*
+     * Calculate new rope length.
+     *
+     * Shorter rope = stronger pull.
+     */
+
+    const distance =
+        hero.position.distanceTo(
+            webAnchor
+        );
+
+    ropeLength = Math.max(
+        distance * 0.72,
+        18
+    );
+
+
+    /*
+     * Activate web if this is the
+     * first web.
+     */
+
+    if(!webActive){
+
+        webActive = true;
+
+        createWeb();
+    }
+
+
+    /*
+     * VERY STRONG INITIAL PULL
+     * toward the NEW building.
+     */
+
+    const pullDirection =
+        webAnchor.clone()
+        .sub(hero.position)
+        .normalize();
+
+
+    player.velocity.addScaledVector(
+        pullDirection,
+        110
+    );
+
+
+    /*
+     * Keep the swing momentum.
+     */
+
+    swingVelocity.copy(
+        player.velocity
+    );
+
+
+    /*
+     * Update HUD.
+     */
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "ATTACHED";
+
+
+    document.getElementById(
+        "status"
+    ).style.color =
+        "#55ddff";
+
+
+    document.getElementById(
+        "message"
+    ).textContent =
+        "WEB ATTACHED — CLICK ANOTHER BUILDING TO REDIRECT!";
+}
+
+/* =========================================================
+   CREATE WEB
+========================================================= */
+
+function createWeb(){
+
+    const geometry =
+        new THREE.BufferGeometry();
+
+    geometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(
+            new Float32Array(6),
+            3
+        )
+    );
+
+
+    webLine =
+        new THREE.Line(
+            geometry,
+            new THREE.LineBasicMaterial({
+                color:0xffffff
+            })
+        );
+
+
+    scene.add(webLine);
+}
+
+
+/* =========================================================
+   UPDATE WEB
+========================================================= */
+
+function updateWeb(){
+
+    if(!webActive){
+        return;
+    }
+
+    const p =
+        webLine.geometry.attributes
+        .position.array;
+
+
+    p[0] =
+        hero.position.x;
+
+    p[1] =
+        hero.position.y + 5;
+
+    p[2] =
+        hero.position.z;
+
+
+    p[3] =
+        webAnchor.x;
+
+    p[4] =
+        webAnchor.y;
+
+    p[5] =
+        webAnchor.z;
+
+
+    webLine.geometry.attributes
+        .position
+        .needsUpdate = true;
+}
+
+
+/* =========================================================
+   RELEASE WEB
+========================================================= */
+
+function releaseWeb(){
+
+    if(!webActive){
+        return;
+    }
+
+
+    webActive = false;
+
+
+    if(webLine){
+
+        scene.remove(
+            webLine
+        );
+
+        webLine.geometry.dispose();
+
+        webLine.material.dispose();
+
+        webLine = null;
+    }
+
+
+    /*
+     * Keep momentum when releasing.
+     */
+
+    player.velocity.add(
+        swingVelocity
+        .multiplyScalar(.45)
+    );
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "RELEASED";
+
+    document.getElementById(
+        "message"
+    ).textContent =
+        "Web released!";
+}
+
+window.addEventListener(
+    "mousedown",
+    e => {
+
+        if(!started){
+            return;
+        }
+
+        /*
+         * LEFT CLICK
+         * Attach/re-attach web
+         */
+
+        if(e.button === 0){
+
+            shootWeb();
+        }
+
+
+        /*
+         * RIGHT CLICK
+         * Release web
+         */
+
+        if(e.button === 2){
+
+            releaseWeb();
+        }
+    }
+);
+
+/* =========================================================
+   MOVEMENT
+========================================================= */
+
+function updateMovement(){
+
+    const input =
+        new THREE.Vector3();
+
+
+    if(keys["KeyW"])
+        input.z -= 1;
+
+    if(keys["KeyS"])
+        input.z += 1;
+
+    if(keys["KeyA"])
+        input.x -= 1;
+
+    if(keys["KeyD"])
+        input.x += 1;
+
+
+    if(input.lengthSq() === 0){
+
+        if(!webActive){
+
+            player.velocity.x *= .82;
+            player.velocity.z *= .82;
+        }
+
+        return;
+    }
+
+
+    input.normalize();
+
+
+    const forward =
+        new THREE.Vector3();
+
+    camera.getWorldDirection(
+        forward
+    );
+
+    forward.y = 0;
+
+    forward.normalize();
+
+
+    const right =
+        new THREE.Vector3();
+
+    right.crossVectors(
+        forward,
+        new THREE.Vector3(0,1,0)
+    ).normalize();
+
+
+    const movement =
+        new THREE.Vector3();
+
+
+    movement.addScaledVector(
+        forward,
+        -input.z
+    );
+
+    movement.addScaledVector(
+        right,
+        input.x
+    );
+
+    movement.normalize();
+
+
+    const speed =
+        keys["ShiftLeft"] ||
+        keys["ShiftRight"]
+        ? player.sprintSpeed
+        : player.walkSpeed;
+
+
+    if(!webActive){
+
+        player.velocity.x =
+            THREE.MathUtils.lerp(
+                player.velocity.x,
+                movement.x * speed,
+                .22
+            );
+
+
+        player.velocity.z =
+            THREE.MathUtils.lerp(
+                player.velocity.z,
+                movement.z * speed,
+                .22
+            );
+
+    }else{
+
+        /*
+         * While swinging, allow WASD
+         * to influence direction strongly.
+         */
+
+        player.velocity.x +=
+            movement.x * 55 / 60;
+
+        player.velocity.z +=
+            movement.z * 55 / 60;
+    }
+}
+
+
+/* =========================================================
+   SWING PHYSICS
+========================================================= */
+
+function updateSwing(dt){
+
+    if(!webActive){
+
+        player.velocity.y -=
+            player.gravity * dt;
+
+        return;
+    }
+
+
+    const toAnchor =
+        webAnchor.clone()
+        .sub(hero.position);
+
+
+    const distance =
+        toAnchor.length();
+
+
+    const anchorDirection =
+        toAnchor.normalize();
+
+
+    /*
+     * STRONG SPRING PULL
+     *
+     * The farther away from the anchor,
+     * the stronger the pull.
+     */
+
+    const stretch =
+        Math.max(
+            0,
+            distance - ropeLength
+        );
+
+
+    player.velocity.addScaledVector(
+        anchorDirection,
+        stretch * 10 * dt
+    );
+
+
+    /*
+     * Gravity.
+     */
+
+    player.velocity.y -=
+        player.gravity * .35 * dt;
+
+
+    /*
+     * Tangential velocity.
+     */
+
+    const radial =
+        player.velocity.dot(
+            anchorDirection
+        );
+
+
+    const tangent =
+        player.velocity.clone()
+        .addScaledVector(
+            anchorDirection,
+            -radial
+        );
+
+
+    if(tangent.lengthSq() > 0){
+
+        tangent.normalize();
+
+        player.velocity.addScaledVector(
+            tangent,
+            30 * dt
+        );
+    }
+
+
+    /*
+     * Rope constraint.
+     */
+
+    if(distance > ropeLength){
+
+        hero.position.copy(
+            webAnchor
+        ).addScaledVector(
+            anchorDirection,
+            -ropeLength
+        );
+
+
+        /*
+         * Remove velocity going away
+         * from the building.
+         */
+
+        const outward =
+            player.velocity.dot(
+                anchorDirection
+            );
+
+
+        if(outward < 0){
+
+            player.velocity.addScaledVector(
+                anchorDirection,
+                -outward
+            );
+        }
+    }
+
+
+    swingVelocity.copy(
+        player.velocity
+    );
+
+
+    /*
+     * Maximum swing speed.
+     */
+
+    const maxSpeed = 125;
+
+
+    if(
+        player.velocity.length() >
+        maxSpeed
+    ){
+
+        player.velocity
+            .normalize()
+            .multiplyScalar(
+                maxSpeed
+            );
+    }
+}
+
+
+/* =========================================================
+   PLAYER UPDATE
+========================================================= */
+
+function updatePlayer(dt){
+
+    updateMovement();
+
+    updateSwing(dt);
+
+
+    /*
+     * Move.
+     */
+
+    hero.position.addScaledVector(
+        player.velocity,
+        dt
+    );
+
+
+    /*
+     * Ground.
+     */
+
+    if(hero.position.y <= 5){
+
+        hero.position.y = 5;
+
+        if(player.velocity.y < 0){
+            player.velocity.y = 0;
+        }
+
+        player.onGround = true;
+
+    }else{
+
+        player.onGround = false;
+    }
+
+
+    /*
+     * Face movement.
+     */
+
+    const horizontal =
+        new THREE.Vector3(
+            player.velocity.x,
+            0,
+            player.velocity.z
+        );
+
+
+    if(horizontal.lengthSq() > 8){
+
+        const angle =
+            Math.atan2(
+                horizontal.x,
+                horizontal.z
+            );
+
+
+        hero.rotation.y =
+            THREE.MathUtils.lerp(
+                hero.rotation.y,
+                angle,
+                .15
+            );
+    }
+
+
+    /*
+     * Swing pose.
+     */
+
+    if(webActive){
+
+        leftArm.rotation.x =
+            THREE.MathUtils.lerp(
+                leftArm.rotation.x,
+                -1.15,
+                .2
+            );
+
+        rightArm.rotation.x =
+            THREE.MathUtils.lerp(
+                rightArm.rotation.x,
+                -1.15,
+                .2
+            );
+
+    }else{
+
+        leftArm.rotation.x =
+            THREE.MathUtils.lerp(
+                leftArm.rotation.x,
+                0,
+                .15
+            );
+
+        rightArm.rotation.x =
+            THREE.MathUtils.lerp(
+                rightArm.rotation.x,
+                0,
+                .15
+            );
+    }
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+    const direction =
+        new THREE.Vector3();
+
+    camera.getWorldDirection(
+        direction
+    );
+
+    direction.y = 0;
+
+    if(direction.lengthSq() > 0){
+        direction.normalize();
+    }
+
+
+    /*
+     * Camera follows behind player.
+     */
+
+    const desired =
+        hero.position.clone();
+
+
+    desired.y += 7;
+
+
+    desired.addScaledVector(
+        direction,
+        -20
+    );
+
+
+    desired.y += 4;
+
+
+    camera.position.lerp(
+        desired,
+        .12
+    );
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetPlayer(){
+
+    releaseWeb();
+
+
+    hero.position.set(
+        0,
+        5,
+        100
+    );
+
+
+    player.velocity.set(
+        0,
+        0,
+        0
+    );
+
+
+    document.getElementById(
+        "message"
+    ).textContent =
+        "Aim at a building and LEFT CLICK.";
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+    const kmh =
+        player.velocity.length() * 3.6;
+
+
+    document.getElementById(
+        "speed"
+    ).textContent =
+        Math.round(kmh);
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        camera.aspect =
+            innerWidth / innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            innerWidth,
+            innerHeight
+        );
+    }
+);
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+let lastTime =
+    performance.now();
+
+
+function gameLoop(time){
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+
+    const dt =
+        Math.min(
+            (time-lastTime)/1000,
+            .033
+        );
+
+
+    lastTime = time;
+
+
+    if(started){
+
+        updatePlayer(dt);
+
+        updateWeb();
+
+        updateCamera();
+
+        updateHUD();
+    }
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+
+requestAnimationFrame(
+    gameLoop
+);
+
+</script>
+
+</body>
+</html>

@@ -1,17 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Breakout - GameX</title>
 
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -20,17 +17,14 @@
 
         body {
             min-height: 100vh;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #09000f,
-                    #190025,
-                    #08000d
-                );
+            background: linear-gradient(
+                135deg,
+                #09000f,
+                #190025,
+                #08000d
+            );
 
             color: white;
-
             font-family: Arial, sans-serif;
 
             display: flex;
@@ -50,14 +44,14 @@
             font-size: 42px;
             margin-bottom: 5px;
 
-            background:
-                linear-gradient(
-                    90deg,
-                    #b026ff,
-                    #ff2bd6
-                );
+            background: linear-gradient(
+                90deg,
+                #b026ff,
+                #ff2bd6
+            );
 
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -70,9 +64,7 @@
             display: flex;
             justify-content: center;
             gap: 55px;
-
             margin-bottom: 12px;
-
             font-size: 19px;
             font-weight: bold;
         }
@@ -88,7 +80,6 @@
             background: #11091a;
 
             border: 2px solid #6d2a8c;
-
             border-radius: 14px;
 
             box-shadow:
@@ -105,12 +96,11 @@
             border: none;
             border-radius: 9px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #8b2cff,
-                    #e62cff
-                );
+            background: linear-gradient(
+                135deg,
+                #8b2cff,
+                #e62cff
+            );
 
             color: white;
 
@@ -126,7 +116,6 @@
 
         .message {
             min-height: 28px;
-
             margin-top: 12px;
 
             font-size: 19px;
@@ -144,9 +133,7 @@
             margin-top: 18px;
 
             color: #d58cff;
-
             text-decoration: none;
-
             font-weight: bold;
         }
 
@@ -172,11 +159,8 @@
             .controls {
                 font-size: 14px;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
@@ -261,47 +245,40 @@
 
 
         let paddle;
-
         let ball;
-
         let bricks;
-
         let score;
-
         let lives;
 
         let running = false;
-
         let gameOver = false;
 
         let animationId;
 
 
         const ROWS = 5;
-
         const COLS = 10;
 
         const BRICK_WIDTH = 66;
-
         const BRICK_HEIGHT = 22;
-
         const BRICK_GAP = 8;
 
         const BRICK_TOP = 55;
-
         const BRICK_LEFT = 22;
 
+
+        // =========================
+        // RESET GAME
+        // =========================
 
         function resetGame() {
 
             cancelAnimationFrame(animationId);
 
             score = 0;
-
             lives = 3;
 
             running = false;
-
             gameOver = false;
 
 
@@ -312,20 +289,25 @@
                 lives;
 
 
+            // PADDLE
+            // Increased speed from 8 to 13
+
             paddle = {
 
                 width: 120,
-
                 height: 14,
 
                 x: WIDTH / 2 - 60,
 
                 y: HEIGHT - 10,
 
-                speed: 8
+                speed: 10
 
             };
 
+
+            // BALL
+            // Slowed down from 4 to 3
 
             ball = {
 
@@ -335,9 +317,8 @@
 
                 radius: 9,
 
-                dx: 4,
-
-                dy: -4
+                dx: 3,
+                dy: -3
 
             };
 
@@ -353,6 +334,10 @@
 
         }
 
+
+        // =========================
+        // CREATE BRICKS
+        // =========================
 
         function createBricks() {
 
@@ -400,6 +385,10 @@
         }
 
 
+        // =========================
+        // START GAME
+        // =========================
+
         function startGame() {
 
             if (gameOver) {
@@ -419,7 +408,16 @@
         }
 
 
+        // =========================
+        // UPDATE
+        // =========================
+
         function update() {
+
+
+            // -------------------------
+            // PADDLE MOVEMENT
+            // -------------------------
 
             if (keys.left) {
 
@@ -428,6 +426,7 @@
 
             }
 
+
             if (keys.right) {
 
                 paddle.x +=
@@ -435,6 +434,8 @@
 
             }
 
+
+            // Keep paddle inside screen
 
             if (
                 paddle.x < 0
@@ -458,12 +459,18 @@
             }
 
 
+            // -------------------------
+            // BALL MOVEMENT
+            // -------------------------
+
             ball.x += ball.dx;
 
             ball.y += ball.dy;
 
 
-            // Walls
+            // -------------------------
+            // WALLS
+            // -------------------------
 
             if (
                 ball.x -
@@ -508,9 +515,12 @@
             }
 
 
-            // Paddle collision
+            // -------------------------
+            // PADDLE COLLISION
+            // -------------------------
 
             if (
+
                 ball.y +
                 ball.radius >=
                 paddle.y &&
@@ -528,7 +538,9 @@
                 paddle.width &&
 
                 ball.dy > 0
+
             ) {
+
 
                 const hitPosition =
                     (
@@ -542,8 +554,10 @@
                         paddle.width / 2
                     );
 
+
                 ball.dx =
-                    hitPosition * 6;
+                    hitPosition * 5;
+
 
                 ball.dy =
                     -Math.abs(ball.dy);
@@ -551,14 +565,20 @@
             }
 
 
-            // Brick collision
+            // -------------------------
+            // BRICK COLLISION
+            // -------------------------
 
-            for (const brick of bricks) {
+            for (
+                const brick of bricks
+            ) {
 
-                if (!brick.alive) continue;
+                if (!brick.alive)
+                    continue;
 
 
                 if (
+
                     ball.x +
                     ball.radius >
                     brick.x &&
@@ -576,11 +596,14 @@
                     ball.radius <
                     brick.y +
                     brick.height
+
                 ) {
 
                     brick.alive = false;
 
+
                     score += 10;
+
 
                     scoreDisplay.textContent =
                         score;
@@ -591,6 +614,7 @@
 
                     checkWin();
 
+
                     break;
 
                 }
@@ -598,7 +622,9 @@
             }
 
 
-            // Ball falls
+            // -------------------------
+            // BALL FALLS
+            // -------------------------
 
             if (
                 ball.y -
@@ -612,6 +638,10 @@
 
         }
 
+
+        // =========================
+        // LOSE LIFE
+        // =========================
 
         function loseLife() {
 
@@ -635,17 +665,23 @@
             }
 
 
+            // Reset ball
+
             ball.x =
                 WIDTH / 2;
 
             ball.y =
                 HEIGHT - 30;
 
-            ball.dx = 4;
 
-            ball.dy = -4;
+            // Slower ball after losing life
+
+            ball.dx = 3;
+            ball.dy = -3;
+
 
             running = false;
+
 
             message.textContent =
                 "Press SPACE or click to continue";
@@ -653,11 +689,16 @@
         }
 
 
+        // =========================
+        // CHECK WIN
+        // =========================
+
         function checkWin() {
 
             const remaining =
                 bricks.some(
-                    brick => brick.alive
+                    brick =>
+                        brick.alive
                 );
 
 
@@ -675,6 +716,10 @@
         }
 
 
+        // =========================
+        // BACKGROUND
+        // =========================
+
         function drawBackground() {
 
             const gradient =
@@ -685,18 +730,22 @@
                     HEIGHT
                 );
 
+
             gradient.addColorStop(
                 0,
                 "#100719"
             );
+
 
             gradient.addColorStop(
                 1,
                 "#251035"
             );
 
+
             ctx.fillStyle =
                 gradient;
+
 
             ctx.fillRect(
                 0,
@@ -707,6 +756,10 @@
 
         }
 
+
+        // =========================
+        // DRAW PADDLE
+        // =========================
 
         function drawPaddle() {
 
@@ -719,20 +772,25 @@
                     paddle.y
                 );
 
+
             gradient.addColorStop(
                 0,
                 "#8b2cff"
             );
+
 
             gradient.addColorStop(
                 1,
                 "#ff2bd6"
             );
 
+
             ctx.fillStyle =
                 gradient;
 
+
             ctx.beginPath();
+
 
             ctx.roundRect(
                 paddle.x,
@@ -742,17 +800,24 @@
                 7
             );
 
+
             ctx.fill();
 
         }
 
+
+        // =========================
+        // DRAW BALL
+        // =========================
 
         function drawBall() {
 
             ctx.fillStyle =
                 "#ffffff";
 
+
             ctx.beginPath();
+
 
             ctx.arc(
                 ball.x,
@@ -762,17 +827,23 @@
                 Math.PI * 2
             );
 
+
             ctx.fill();
 
         }
 
 
+        // =========================
+        // DRAW BRICKS
+        // =========================
+
         function drawBricks() {
 
             bricks.forEach(
-                (brick, index) => {
+                (brick) => {
 
-                    if (!brick.alive) return;
+                    if (!brick.alive)
+                        return;
 
 
                     const gradient =
@@ -790,6 +861,7 @@
                         "#7224a8"
                     );
 
+
                     gradient.addColorStop(
                         1,
                         "#d32be8"
@@ -802,6 +874,7 @@
 
                     ctx.beginPath();
 
+
                     ctx.roundRect(
                         brick.x,
                         brick.y,
@@ -810,6 +883,7 @@
                         5
                     );
 
+
                     ctx.fill();
 
                 }
@@ -817,6 +891,10 @@
 
         }
 
+
+        // =========================
+        // DRAW
+        // =========================
 
         function draw() {
 
@@ -831,6 +909,10 @@
         }
 
 
+        // =========================
+        // GAME LOOP
+        // =========================
+
         function gameLoop() {
 
             if (!running) {
@@ -841,9 +923,11 @@
 
             }
 
+
             update();
 
             draw();
+
 
             animationId =
                 requestAnimationFrame(
@@ -853,10 +937,13 @@
         }
 
 
+        // =========================
+        // KEYBOARD
+        // =========================
+
         const keys = {
 
             left: false,
-
             right: false
 
         };
@@ -866,9 +953,12 @@
             "keydown",
             event => {
 
+
                 if (
+
                     event.key === "ArrowLeft" ||
                     event.key.toLowerCase() === "a"
+
                 ) {
 
                     keys.left = true;
@@ -877,8 +967,10 @@
 
 
                 if (
+
                     event.key === "ArrowRight" ||
                     event.key.toLowerCase() === "d"
+
                 ) {
 
                     keys.right = true;
@@ -904,9 +996,12 @@
             "keyup",
             event => {
 
+
                 if (
+
                     event.key === "ArrowLeft" ||
                     event.key.toLowerCase() === "a"
+
                 ) {
 
                     keys.left = false;
@@ -915,8 +1010,10 @@
 
 
                 if (
+
                     event.key === "ArrowRight" ||
                     event.key.toLowerCase() === "d"
+
                 ) {
 
                     keys.right = false;
@@ -926,6 +1023,10 @@
             }
         );
 
+
+        // =========================
+        // MOUSE / TOUCH
+        // =========================
 
         canvas.addEventListener(
             "click",
@@ -957,18 +1058,23 @@
 
                 event.preventDefault();
 
+
                 const touchX =
                     event.touches[0].clientX;
+
 
                 const difference =
                     touchX -
                     touchStartX;
 
+
                 paddle.x +=
                     difference;
 
+
                 if (paddle.x < 0)
                     paddle.x = 0;
+
 
                 if (
                     paddle.x +
@@ -982,11 +1088,16 @@
 
                 }
 
+
                 touchStartX = touchX;
 
             }
         );
 
+
+        // =========================
+        // RESTART
+        // =========================
 
         restartButton.addEventListener(
             "click",
@@ -994,10 +1105,14 @@
         );
 
 
+        // =========================
+        // START
+        // =========================
+
         resetGame();
 
     </script>
 
 </body>
-
 </html>
+
