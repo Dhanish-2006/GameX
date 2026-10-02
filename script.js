@@ -3,255 +3,428 @@
 // =====================================================
 
 
-// ================= SEARCH =================
+// =====================================================
+// OPEN GAME
+// =====================================================
 
-const searchBtn = document.getElementById("searchBtn");
-const searchSection = document.getElementById("searchSection");
-const searchInput = document.getElementById("searchInput");
+function openGame(gamePath) {
 
-searchBtn.addEventListener("click", () => {
-
-    searchSection.classList.toggle("show");
-
-    if (searchSection.classList.contains("show")) {
-        searchInput.focus();
+    if (!gamePath) {
+        return;
     }
 
-});
+    window.location.href = gamePath;
+
+}
 
 
-// ================= SEARCH GAMES =================
 
-searchInput.addEventListener("input", () => {
+// =====================================================
+// SCROLL TO GAMES
+// =====================================================
 
-    const searchText =
-        searchInput.value.toLowerCase().trim();
+function scrollToGames() {
 
-    const games =
-        document.querySelectorAll(".game-card");
+    const gamesSection =
+        document.getElementById("games");
 
-    games.forEach(game => {
+    if (gamesSection) {
 
-        const gameName =
-            game.querySelector("h3")
-                .textContent
-                .toLowerCase();
+        gamesSection.scrollIntoView({
+            behavior: "smooth"
+        });
 
-        if (gameName.includes(searchText)) {
-            game.style.display = "";
-        } else {
-            game.style.display = "none";
+    }
+
+}
+
+
+
+// =====================================================
+// SEARCH
+// =====================================================
+
+const searchBtn =
+    document.getElementById("searchBtn");
+
+const searchSection =
+    document.getElementById("searchSection");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+
+if (
+    searchBtn &&
+    searchSection &&
+    searchInput
+) {
+
+    searchBtn.addEventListener("click", () => {
+
+        searchSection.classList.toggle("show");
+
+
+        if (
+            searchSection.classList.contains("show")
+        ) {
+
+            searchInput.focus();
+
         }
 
     });
 
-});
+
+    searchInput.addEventListener("input", () => {
+
+        const searchText =
+            searchInput.value
+                .toLowerCase()
+                .trim();
 
 
-// ================= DARK / LIGHT MODE =================
+        const games =
+            document.querySelectorAll(
+                ".game-card"
+            );
+
+
+        games.forEach(game => {
+
+            const title =
+                game.querySelector("h3");
+
+
+            if (!title) {
+                return;
+            }
+
+
+            const gameName =
+                title.textContent
+                    .toLowerCase();
+
+
+            if (
+                gameName.includes(searchText)
+            ) {
+
+                game.style.display = "";
+
+            } else {
+
+                game.style.display = "none";
+
+            }
+
+        });
+
+    });
+
+}
+
+
+
+// =====================================================
+// DARK / LIGHT MODE
+// =====================================================
 
 const themeBtn =
     document.getElementById("themeBtn");
 
-themeBtn.addEventListener("click", () => {
 
-    document.body.classList.toggle("light-mode");
+if (themeBtn) {
 
-    if (
-        document.body.classList.contains("light-mode")
-    ) {
 
-        themeBtn.textContent = "☀️";
+    themeBtn.addEventListener("click", () => {
 
-        localStorage.setItem(
-            "gamex-theme",
-            "light"
+        document.body.classList.toggle(
+            "light-mode"
         );
 
-    } else {
 
-        themeBtn.textContent = "🌙";
+        if (
+            document.body.classList.contains(
+                "light-mode"
+            )
+        ) {
 
-        localStorage.setItem(
-            "gamex-theme",
-            "dark"
-        );
-
-    }
-
-});
+            themeBtn.textContent = "☀️";
 
 
-// Load saved theme
+            localStorage.setItem(
+                "gamex-theme",
+                "light"
+            );
 
-const savedTheme =
-    localStorage.getItem("gamex-theme");
+        } else {
 
-if (savedTheme === "light") {
-
-    document.body.classList.add("light-mode");
-
-    themeBtn.textContent = "☀️";
-
-}
+            themeBtn.textContent = "🌙";
 
 
-// ================= EXPLORE BUTTON =================
-
-const exploreBtn =
-    document.getElementById("exploreBtn");
-
-exploreBtn.addEventListener("click", () => {
-
-    document.querySelector(".games-section")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
-
-});
-
-
-// ================= TRENDING BUTTON =================
-
-const trendingBtn =
-    document.querySelector(".secondary-btn");
-
-trendingBtn.addEventListener("click", () => {
-
-    document.querySelector(".games-section")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
-
-});
-
-// ================= PLAY BUTTONS =================
-
-const playButtons = document.querySelectorAll(".play-btn");
-
-playButtons.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        const gameName = button
-            .closest(".game-card")
-            .querySelector("h3")
-            .textContent;
-
-        if (gameName === "Snake") {
-
-            window.location.href = "games/snake.html";
-
-        }
-
-        else if (gameName === "Tic-Tac-Toe") {
-
-            window.location.href = "games/tictactoe.html";
-
-        }
-
-        else if (gameName === "Tetris") {
-
-            window.location.href = "games/tetris.html";
-
-        }
-
-        else if (gameName === "Pong") {
-
-            window.location.href = "games/pong.html";
-
-        }
-
-        else if (gameName === "Memory Cards") {
-
-            window.location.href = "games/memory.html";
-
-        }
-
-        else if (gameName === "Endless Runner") {
-
-            window.location.href = "games/runner.html";
-
-        }
-
-        else if (gameName === "2048") {
-
-            window.location.href = "games/2048.html";
-
-        }
-        else if (gameName === "Minesweeper") {
-
-            window.location.href = "games/minesweeper.html";
-
-}         
-        else if (gameName === "Flappy Bird") {
-
-         window.location.href = "games/flappy.html";
-
-}
-        else if (gameName === "Car Racing") {
-           window.location.href = "games/car.html";
-}
-        else if (gameName === "Bike Racing") {
-    window.location.href = "games/bike.html";
-}
-
-        else {
-
-            alert(
-                gameName +
-                " will be available soon! 🎮"
+            localStorage.setItem(
+                "gamex-theme",
+                "dark"
             );
 
         }
 
     });
 
-});
-  
 
-// ================= MOBILE MENU =================
 
-const menuBtn =
-    document.getElementById("menuBtn");
+    // LOAD SAVED THEME
 
-const navbar =
-    document.querySelector(".navbar");
+    const savedTheme =
+        localStorage.getItem(
+            "gamex-theme"
+        );
 
-menuBtn.addEventListener("click", () => {
 
-    if (navbar.style.display === "flex") {
+    if (savedTheme === "light") {
 
-        navbar.style.display = "none";
+        document.body.classList.add(
+            "light-mode"
+        );
 
-    } else {
-
-        navbar.style.display = "flex";
-
-        navbar.style.position = "absolute";
-
-        navbar.style.top = "75px";
-
-        navbar.style.left = "0";
-
-        navbar.style.width = "100%";
-
-        navbar.style.padding = "20px";
-
-        navbar.style.flexDirection = "column";
-
-        navbar.style.background = "#0f0f16";
-
-        navbar.style.borderBottom =
-            "1px solid #292936";
+        themeBtn.textContent = "☀️";
 
     }
 
+}
+
+
+
+// =====================================================
+// EXPLORE BUTTON
+// =====================================================
+
+const exploreBtn =
+    document.getElementById(
+        "exploreBtn"
+    );
+
+
+if (exploreBtn) {
+
+    exploreBtn.addEventListener(
+        "click",
+        scrollToGames
+    );
+
+}
+
+
+
+// =====================================================
+// VIEW ALL BUTTON
+// =====================================================
+
+const viewAllBtn =
+    document.getElementById(
+        "viewAllBtn"
+    );
+
+
+if (viewAllBtn) {
+
+    viewAllBtn.addEventListener(
+        "click",
+        () => {
+
+            // Clear search first
+
+            if (searchInput) {
+
+                searchInput.value = "";
+
+            }
+
+
+            const games =
+                document.querySelectorAll(
+                    ".game-card"
+                );
+
+
+            games.forEach(game => {
+
+                game.style.display = "";
+
+            });
+
+
+            scrollToGames();
+
+        }
+    );
+
+}
+
+
+
+// =====================================================
+// PLAY BUTTONS
+// =====================================================
+
+const playButtons =
+    document.querySelectorAll(
+        ".play-btn"
+    );
+
+
+playButtons.forEach(button => {
+
+
+    button.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+
+            const gamePath =
+                this.getAttribute(
+                    "data-game"
+                );
+
+
+            if (!gamePath) {
+
+                console.error(
+                    "Game path missing."
+                );
+
+                return;
+
+            }
+
+
+            openGame(gamePath);
+
+        }
+    );
+
 });
 
 
-// ================= WELCOME MESSAGE =================
+
+// =====================================================
+// MOBILE MENU
+// =====================================================
+
+const menuBtn =
+    document.getElementById(
+        "menuBtn"
+    );
+
+
+const navbar =
+    document.querySelector(
+        ".navbar"
+    );
+
+
+if (
+    menuBtn &&
+    navbar
+) {
+
+
+    menuBtn.addEventListener(
+        "click",
+        () => {
+
+            navbar.classList.toggle(
+                "show"
+            );
+
+        }
+    );
+
+
+
+    // CLOSE MENU WHEN LINK IS CLICKED
+
+    const navLinks =
+        navbar.querySelectorAll(
+            "a"
+        );
+
+
+    navLinks.forEach(link => {
+
+        link.addEventListener(
+            "click",
+            () => {
+
+                navbar.classList.remove(
+                    "show"
+                );
+
+            }
+        );
+
+    });
+
+}
+
+
+
+// =====================================================
+// KEYBOARD SEARCH SHORTCUT
+// =====================================================
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        // Press "/" to open search
+
+        if (
+            event.key === "/" &&
+            document.activeElement.tagName !== "INPUT"
+        ) {
+
+            event.preventDefault();
+
+
+            if (
+                searchSection &&
+                searchInput
+            ) {
+
+                searchSection.classList.add(
+                    "show"
+                );
+
+                searchInput.focus();
+
+            }
+
+        }
+
+    }
+);
+
+
+
+// =====================================================
+// GAME COUNT
+// =====================================================
+
+const gameCards =
+    document.querySelectorAll(
+        ".game-card"
+    );
+
 
 console.log(
     "🎮 GameX loaded successfully!"
+);
+
+
+console.log(
+    `🎮 ${gameCards.length} games connected.`
 );

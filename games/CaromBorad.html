@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101b17">
+  <title>Carrom Club | The Carrom Room</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --felt: #101b17;
+      --felt-light: #182923;
+      --cream: #f1e7cf;
+      --muted: #a9aa91;
+      --gold: #d3ad69;
+      --gold-light: #f0d59c;
+      --line: rgba(230, 216, 177, 0.18);
+      --walnut: #59341f;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-width: 320px; background: var(--felt); }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse at 50% 36%, rgba(50, 88, 68, 0.28), transparent 49%),
+        radial-gradient(ellipse at 50% 100%, rgba(2, 9, 7, 0.72), transparent 55%),
+        #101b17;
+      color: var(--cream);
+    }
+
+    body::before {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      background-image:
+        radial-gradient(rgba(231, 221, 184, 0.11) 0.55px, transparent 0.8px),
+        linear-gradient(115deg, transparent 49.8%, rgba(255, 255, 255, 0.018) 50%, transparent 50.2%);
+      background-size: 7px 7px, 100% 100%;
+      content: "";
+      opacity: 0.17;
+      pointer-events: none;
+    }
+
+    button { font: inherit; }
+
+    button:focus-visible,
+    canvas:focus-visible {
+      outline: 2px solid var(--gold-light);
+      outline-offset: 4px;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 64px, 1390px);
+      margin: 0 auto;
+      padding: 23px 0 38px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 15px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--cream);
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 23px;
+      height: 23px;
+      place-items: center;
+      border: 1px solid rgba(211, 173, 105, 0.76);
+      border-radius: 50%;
+      color: var(--gold-light);
+      font-family: Georgia, serif;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .topbar-note { display: flex; align-items: center; gap: 9px; margin: 0; }
+
+    .topbar-light {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 9px rgba(211, 173, 105, 0.7);
+    }
+
+    .heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 21px 0 20px;
+      animation: arrive 640ms cubic-bezier(.2,.75,.25,1) both;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px 4px;
+      color: var(--gold);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: #f2e7cd;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(48px, 6vw, 76px);
+      font-weight: 400;
+      letter-spacing: 0.055em;
+      line-height: 0.94;
+    }
+
+    h1 span {
+      color: var(--gold);
+      font-size: 0.72em;
+      vertical-align: 0.08em;
+    }
+
+    .heading-copy {
+      max-width: 275px;
+      margin: 0 2px 5px 0;
+      color: #b9b8a4;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      font-style: italic;
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 730px) minmax(218px, 265px);
+      align-items: center;
+      justify-content: center;
+      gap: clamp(27px, 4.5vw, 68px);
+    }
+
+    .board-column { min-width: 0; animation: board-rise 760ms 80ms cubic-bezier(.2,.75,.25,1) both; }
+
+    .scorebar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      min-height: 66px;
+      border-top: 1px solid var(--line);
+      padding: 8px 3px 10px;
+    }
+
+    .player-score {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      opacity: 0.58;
+      transition: opacity 220ms ease;
+    }
+
+    .player-score:last-child { justify-content: flex-end; text-align: right; }
+    .player-score.is-active { opacity: 1; }
+
+    .player-mark {
+      flex: 0 0 auto;
+      width: 9px;
+      height: 9px;
+      border: 1px solid rgba(245, 228, 188, 0.7);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff6de, #c39a57 78%);
+      box-shadow: 0 0 12px rgba(219, 184, 116, 0.25);
+    }
+
+    .shade-mark {
+      border-color: #bc9d70;
+      background: radial-gradient(circle at 35% 30%, #9b7954, #32251a 78%);
+    }
+
+    .player-ident { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
+
+    .player-name {
+      overflow: hidden;
+      color: #e3d8bd;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .player-sub {
+      color: #9f9f88;
+      font-size: 9px;
+      letter-spacing: 0.03em;
+    }
+
+    .player-total {
+      margin-left: 4px;
+      color: var(--gold-light);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .player-score:last-child .player-total { margin-right: 4px; margin-left: 0; }
+
+    .round-status { min-width: 98px; padding: 0 14px; text-align: center; }
+
+    .round-label {
+      display: block;
+      margin-bottom: 4px;
+      color: #8f9a87;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+    }
+
+    .round-value {
+      display: block;
+      color: #e8dab9;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .board-wrap {
+      position: relative;
+      width: 100%;
+      isolation: isolate;
+      filter: drop-shadow(0 26px 35px rgba(0, 0, 0, 0.42));
+    }
+
+    .board-wrap::after {
+      position: absolute;
+      z-index: -1;
+      inset: 14% 14% 6%;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.32);
+      content: "";
+      filter: blur(28px);
+    }
+
+    #carromBoard {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .board-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 9px 4px 0;
+      color: #879084;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .board-caption span:last-child { color: #a9a48a; text-align: right; }
+
+    .game-aside {
+      align-self: center;
+      padding: 7px 0 13px;
+      animation: arrive 700ms 220ms cubic-bezier(.2,.75,.25,1) both;
+    }
+
+    .turn-block { border-top: 1px solid var(--line); padding-top: 17px; }
+
+    .aside-eyebrow {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.21em;
+      text-transform: uppercase;
+    }
+
+    .turn-title {
+      margin: 0;
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 29px;
+      font-weight: 400;
+      line-height: 1.06;
+    }
+
+    .turn-message {
+      min-height: 52px;
+      margin: 10px 0 0;
+      color: #b4b39e;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .power-block { margin-top: 20px; }
+
+    .power-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #9fa18e;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .power-value { color: var(--gold-light); font-variant-numeric: tabular-nums; }
+
+    .power-track {
+      height: 3px;
+      overflow: hidden;
+      background: rgba(236, 225, 195, 0.13);
+    }
+
+    .power-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #b99151, #f0d59c);
+      box-shadow: 0 0 11px rgba(240, 213, 156, 0.46);
+      transition: width 80ms linear;
+    }
+
+    .aside-rule { height: 1px; margin: 22px 0 18px; background: var(--line); }
+
+    .mode-label {
+      display: block;
+      margin-bottom: 9px;
+      color: #9fa18e;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid rgba(230, 216, 177, 0.19);
+      padding: 3px;
+    }
+
+    .mode-button {
+      min-height: 34px;
+      border: 0;
+      background: transparent;
+      color: #989c88;
+      cursor: pointer;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 180ms ease, background 180ms ease;
+    }
+
+    .mode-button[aria-pressed="true"] { background: rgba(211, 173, 105, 0.16); color: var(--gold-light); }
+
+    .mode-button:hover { color: var(--cream); }
+
+    .action-stack { display: grid; gap: 8px; margin-top: 18px; }
+
+    .game-button {
+      display: flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 1px;
+      padding: 0 16px;
+      cursor: pointer;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .game-button:hover:not(:disabled) { transform: translateY(-1px); }
+    .game-button:disabled { cursor: default; opacity: 0.48; }
+
+    .button-primary { background: linear-gradient(120deg, #dfc184, #b68c4e); color: #20180e; }
+    .button-primary:hover:not(:disabled) { background: linear-gradient(120deg, #efd49b, #c69a5a); }
+    .button-secondary { border-color: rgba(230, 216, 177, 0.25); background: transparent; color: #d2c6a7; }
+    .button-secondary:hover:not(:disabled) { border-color: rgba(230, 216, 177, 0.5); color: #f1e7cf; }
+
+    .how-to {
+      margin-top: 21px;
+      border-top: 1px solid var(--line);
+      padding-top: 15px;
+    }
+
+    .how-to-title {
+      margin: 0 0 8px;
+      color: #c4b994;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .how-to p { margin: 0; color: #989c89; font-size: 10px; line-height: 1.7; }
+
+    .key-note { display: block; margin-top: 8px; color: #b6aa8d; font-size: 8px; letter-spacing: 0.08em; }
+
+    .footer-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      max-width: 1058px;
+      margin: 21px auto 0;
+      color: #778178;
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .footer-line p { margin: 0; }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes board-rise {
+      from { opacity: 0; transform: translateY(16px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { width: min(100% - 40px, 720px); }
+      .game-layout { grid-template-columns: minmax(0, 1fr); gap: 25px; }
+      .board-column { width: min(100%, 690px); margin: 0 auto; }
+      .game-aside { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 0.75fr); column-gap: 32px; align-items: start; }
+      .turn-block { grid-row: span 3; }
+      .aside-rule { display: none; }
+      .how-to { margin-top: 15px; }
+      .action-stack { margin-top: 14px; }
+      .power-block { margin-top: 17px; }
+      .footer-line { max-width: 690px; }
+    }
+
+    @media (max-width: 560px) {
+      .app-shell { width: min(100% - 28px, 480px); padding-top: 15px; }
+      .topbar { min-height: 36px; padding-bottom: 12px; font-size: 8px; }
+      .brand-mark { width: 20px; height: 20px; }
+      .topbar-note { gap: 6px; font-size: 7px; letter-spacing: 0.15em; }
+      .heading { align-items: flex-start; flex-direction: column; gap: 7px; padding: 18px 0 15px; }
+      h1 { font-size: clamp(48px, 15vw, 67px); }
+      .heading-copy { max-width: 280px; margin: 0 0 0 3px; font-size: 13px; text-align: left; }
+      .game-layout { gap: 14px; }
+      .scorebar { min-height: 58px; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); padding: 6px 0 8px; }
+      .player-score { gap: 6px; }
+      .player-mark { width: 7px; height: 7px; }
+      .player-name { max-width: 85px; font-size: 7px; letter-spacing: 0.11em; }
+      .player-sub { font-size: 8px; }
+      .player-total { font-size: 20px; }
+      .round-status { min-width: 76px; padding: 0 7px; }
+      .round-label { font-size: 6px; }
+      .round-value { font-size: 7px; letter-spacing: 0.08em; }
+      .board-caption { margin-top: 6px; font-size: 7px; letter-spacing: 0.1em; }
+      .game-aside { display: block; padding-top: 2px; }
+      .turn-block { padding-top: 13px; }
+      .turn-title { font-size: 25px; }
+      .turn-message { min-height: 0; margin-top: 7px; }
+      .power-block { margin-top: 14px; }
+      .mode-wrap { margin-top: 18px; }
+      .action-stack { grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 11px; }
+      .game-button { min-height: 42px; padding: 0 9px; font-size: 8px; letter-spacing: 0.11em; }
+      .how-to { margin-top: 15px; padding-top: 12px; }
+      .footer-line { flex-direction: column; gap: 6px; margin-top: 15px; font-size: 7px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span>The Carrom Room</span>
+      </div>
+      <p class="topbar-note"><span class="topbar-light" aria-hidden="true"></span>Private table / 01</p>
+    </header>
+
+    <main>
+      <section class="heading" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">A game of touch and precision</p>
+          <h1 id="pageTitle">CARROM<span>.</span></h1>
+        </div>
+        <p class="heading-copy">A polished board. A steady hand. One perfect strike.</p>
+      </section>
+
+      <section class="game-layout" aria-label="Carrom game">
+        <div class="board-column">
+          <div class="scorebar" aria-label="Match score">
+            <div class="player-score is-active" id="ivoryPanel">
+              <span class="player-mark" aria-hidden="true"></span>
+              <div class="player-ident">
+                <span class="player-name" id="ivoryName">IVORY / YOU</span>
+                <span class="player-sub"><span id="ivoryRemaining">09</span> pieces left</span>
+              </div>
+              <strong class="player-total" id="ivoryScore">00</strong>
+            </div>
+            <div class="round-status" aria-live="polite">
+              <span class="round-label" id="roundLabel">HUMAN VS AI</span>
+              <strong class="round-value" id="roundValue">READY</strong>
+            </div>
+            <div class="player-score" id="shadePanel">
+              <strong class="player-total" id="shadeScore">00</strong>
+              <div class="player-ident">
+                <span class="player-name" id="shadeName">ONYX / AI</span>
+                <span class="player-sub"><span id="shadeRemaining">09</span> pieces left</span>
+              </div>
+              <span class="player-mark shade-mark" aria-hidden="true"></span>
+            </div>
+          </div>
+
+          <div class="board-wrap">
+            <canvas id="carromBoard" width="900" height="900" tabindex="0" role="application" aria-label="Carrom board. Drag the striker backward and release to shoot. Click near the baseline to reposition it."></canvas>
+          </div>
+          <div class="board-caption">
+            <span>Ivory striker / Player 1 lower baseline</span>
+            <span>Drag back to aim / release to shoot</span>
+          </div>
+        </div>
+
+        <aside class="game-aside" aria-label="Game controls and status">
+          <div class="turn-block">
+            <p class="aside-eyebrow" id="turnEyebrow">The break is yours</p>
+            <h2 class="turn-title" id="turnTitle">Take your shot</h2>
+            <p class="turn-message" id="gameMessage">Drag the striker back from the lower baseline, then release. Pot an ivory piece to keep your turn.</p>
+            <div class="power-block" aria-label="Shot power">
+              <div class="power-head"><span>Shot power</span><span class="power-value" id="powerValue">0%</span></div>
+              <div class="power-track"><div class="power-fill" id="powerFill"></div></div>
+            </div>
+          </div>
+
+          <div class="mode-wrap">
+            <span class="mode-label">Choose your table</span>
+            <div class="mode-switch" role="group" aria-label="Game mode">
+              <button class="mode-button" type="button" data-mode="ai" aria-pressed="true">Human vs AI</button>
+              <button class="mode-button" type="button" data-mode="human" aria-pressed="false">Human vs Human</button>
+            </div>
+          </div>
+
+          <div class="action-stack">
+            <button class="game-button button-primary" type="button" id="startButton">Start match</button>
+            <button class="game-button button-secondary" type="button" id="resetButton">Reset table</button>
+          </div>
+
+          <div class="how-to">
+            <p class="how-to-title">The touch</p>
+            <p>Pull the striker away from your target to set the angle. The farther you pull, the harder it travels. Pot your color to shoot again.</p>
+            <span class="key-note">LEFT / RIGHT MOVE STRIKER / SPACE FIRES STRAIGHT</span>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="footer-line">
+        <p>Hand-finished walnut / ivory / onyx</p>
+        <p>Clear your color. Claim the queen.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const canvas = document.getElementById("carromBoard");
+      const ctx = canvas.getContext("2d");
+      const ui = {
+        ivoryPanel: document.getElementById("ivoryPanel"),
+        shadePanel: document.getElementById("shadePanel"),
+        ivoryName: document.getElementById("ivoryName"),
+        shadeName: document.getElementById("shadeName"),
+        ivoryScore: document.getElementById("ivoryScore"),
+        shadeScore: document.getElementById("shadeScore"),
+        ivoryRemaining: document.getElementById("ivoryRemaining"),
+        shadeRemaining: document.getElementById("shadeRemaining"),
+        roundLabel: document.getElementById("roundLabel"),
+        roundValue: document.getElementById("roundValue"),
+        turnEyebrow: document.getElementById("turnEyebrow"),
+        turnTitle: document.getElementById("turnTitle"),
+        gameMessage: document.getElementById("gameMessage"),
+        powerValue: document.getElementById("powerValue"),
+        powerFill: document.getElementById("powerFill"),
+        startButton: document.getElementById("startButton"),
+        resetButton: document.getElementById("resetButton")
+      };
+
+      const size = canvas.width;
+      const center = size / 2;
+      const pocketPoints = [
+        { x: 108, y: 108 },
+        { x: 792, y: 108 },
+        { x: 792, y: 792 },
+        { x: 108, y: 792 }
+      ];
+      const baseline = { sun: 720, shade: 180 };
+      const startRange = { min: 278, max: 622 };
+      const maxPull = 132;
+      const modeButtons = Array.from(document.querySelectorAll("[data-mode]"));
+
+      const boardTexture = document.createElement("canvas");
+      boardTexture.width = size;
+      boardTexture.height = size;
+      const boardCtx = boardTexture.getContext("2d");
+
+      let mode = "ai";
+      let state = "ready";
+      let activePlayer = "sun";
+      let coins = [];
+      let striker;
+      let scores = { sun: 0, shade: 0 };
+      let shotOwner = "sun";
+      let shotEvents = [];
+      let strikerFoul = false;
+      let aiming = null;
+      let particles = [];
+      let settleFrames = 0;
+      let accumulator = 0;
+      let previousFrame = 0;
+      let cpuTimer = null;
+      let message = "Drag the striker back from the lower baseline, then release. Pot an ivory piece to keep your turn.";
+      let winner = null;
+
+      function roundedRect(target, x, y, width, height, radius) {
+        const r = Math.min(radius, width / 2, height / 2);
+        target.beginPath();
+        target.moveTo(x + r, y);
+        target.lineTo(x + width - r, y);
+        target.quadraticCurveTo(x + width, y, x + width, y + r);
+        target.lineTo(x + width, y + height - r);
+        target.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+        target.lineTo(x + r, y + height);
+        target.quadraticCurveTo(x, y + height, x, y + height - r);
+        target.lineTo(x, y + r);
+        target.quadraticCurveTo(x, y, x + r, y);
+        target.closePath();
+      }
+
+      function makeRandom(seed) {
+        let value = seed >>> 0;
+        return () => {
+          value = (value * 1664525 + 1013904223) >>> 0;
+          return value / 4294967296;
+        };
+      }
+
+      function drawBoardTexture() {
+        const g = boardCtx;
+        const random = makeRandom(41273);
+        g.clearRect(0, 0, size, size);
+
+        const frame = g.createLinearGradient(35, 24, 860, 878);
+        frame.addColorStop(0, "#432619");
+        frame.addColorStop(0.15, "#a96d3c");
+        frame.addColorStop(0.24, "#d0a16a");
+        frame.addColorStop(0.37, "#704126");
+        frame.addColorStop(0.56, "#382117");
+        frame.addColorStop(0.72, "#b27a45");
+        frame.addColorStop(0.87, "#724329");
+        frame.addColorStop(1, "#382117");
+
+        g.save();
+        g.shadowColor = "rgba(0, 0, 0, 0.72)";
+        g.shadowBlur = 24;
+        g.shadowOffsetY = 14;
+        roundedRect(g, 20, 19, 860, 862, 39);
+        g.fillStyle = frame;
+        g.fill();
+        g.restore();
+
+        roundedRect(g, 20, 19, 860, 862, 39);
+        g.strokeStyle = "rgba(243, 197, 126, 0.58)";
+        g.lineWidth = 2;
+        g.stroke();
+
+        g.save();
+        roundedRect(g, 28, 27, 844, 846, 34);
+        g.clip();
+        for (let i = 0; i < 280; i += 1) {
+          const y = 25 + random() * 850;
+          const x = 26 + random() * 848;
+          const length = 24 + random() * 250;
+          const lift = (random() - 0.5) * 9;
+          g.beginPath();
+          g.moveTo(x, y);
+          g.bezierCurveTo(x + length * 0.3, y + lift, x + length * 0.68, y - lift, x + length, y + lift * 0.2);
+          g.strokeStyle = random() > 0.5 ? "rgba(255, 215, 158, 0.08)" : "rgba(28, 12, 7, 0.09)";
+          g.lineWidth = 0.7 + random() * 1.1;
+          g.stroke();
+        }
+        g.restore();
+
+        roundedRect(g, 39, 38, 822, 824, 30);
+        g.strokeStyle = "rgba(247, 209, 151, 0.62)";
+        g.lineWidth = 2;
+        g.stroke();
+        roundedRect(g, 48, 47, 804, 806, 27);
+        g.strokeStyle = "rgba(40, 20, 11, 0.72)";
+        g.lineWidth = 5;
+        g.stroke();
+        roundedRect(g, 55, 54, 790, 792, 24);
+        g.strokeStyle = "rgba(224, 176, 112, 0.65)";
+        g.lineWidth = 1.5;
+        g.stroke();
+
+        const surface = g.createLinearGradient(75, 75, 820, 820);
+        surface.addColorStop(0, "#e8d4aa");
+        surface.addColorStop(0.26, "#f3e3bf");
+        surface.addColorStop(0.52, "#ecd9b0");
+        surface.addColorStop(0.77, "#f1dfba");
+        surface.addColorStop(1, "#dbc398");
+        roundedRect(g, 73, 72, 754, 756, 18);
+        g.fillStyle = surface;
+        g.fill();
+
+        g.save();
+        roundedRect(g, 74, 73, 752, 754, 18);
+        g.clip();
+        for (let i = 0; i < 240; i += 1) {
+          const y = 76 + random() * 747;
+          const x = 75 + random() * 690;
+          const length = 35 + random() * 270;
+          const bow = (random() - 0.5) * 5;
+          g.beginPath();
+          g.moveTo(x, y);
+          g.bezierCurveTo(x + length * 0.28, y + bow, x + length * 0.7, y - bow * 0.65, x + length, y);
+          g.strokeStyle = random() > 0.5 ? "rgba(139, 101, 54, 0.035)" : "rgba(255, 252, 228, 0.12)";
+          g.lineWidth = 0.5 + random() * 0.75;
+          g.stroke();
+        }
+        [
+          { x: 208, y: 355, rx: 25, ry: 7 },
+          { x: 680, y: 513, rx: 19, ry: 6 },
+          { x: 335, y: 688, rx: 15, ry: 5 }
+        ].forEach(knot => {
+          g.save();
+          g.translate(knot.x, knot.y);
+          g.scale(1, knot.ry / knot.rx);
+          for (let ring = 0; ring < 3; ring += 1) {
+            g.beginPath();
+            g.ellipse(0, 0, knot.rx * (0.35 + ring * 0.24), knot.rx * (0.08 + ring * 0.05), 0, 0, Math.PI * 2);
+            g.strokeStyle = "rgba(135, 99, 55, 0.08)";
+            g.lineWidth = 1;
+            g.stroke();
+          }
+          g.restore();
+        });
+        g.restore();
+
+        roundedRect(g, 73, 72, 754, 756, 18);
+        g.strokeStyle = "rgba(129, 83, 38, 0.66)";
+        g.lineWidth = 3;
+        g.stroke();
+        roundedRect(g, 80, 79, 740, 742, 15);
+        g.strokeStyle = "rgba(255, 247, 215, 0.5)";
+        g.lineWidth = 1;
+        g.stroke();
+
+        drawPlayLines(g);
+        drawPockets(g);
+        drawCarvedDetails(g);
+      }
+
+      function drawPlayLines(g) {
+        g.save();
+        g.lineCap = "round";
+        g.strokeStyle = "rgba(116, 62, 33, 0.68)";
+        g.fillStyle = "rgba(116, 62, 33, 0.62)";
+        g.lineWidth = 1.5;
+
+        roundedRect(g, 132, 132, 636, 636, 15);
+        g.stroke();
+        roundedRect(g, 141, 141, 618, 618, 12);
+        g.strokeStyle = "rgba(255, 250, 225, 0.42)";
+        g.lineWidth = 1;
+        g.stroke();
+
+        const lo = 273;
+        const hi = 627;
+        [180, 720].forEach(y => {
+          g.strokeStyle = "rgba(122, 67, 35, 0.78)";
+          g.lineWidth = 1.5;
+          g.beginPath();
+          g.moveTo(lo, y - 10);
+          g.lineTo(hi, y - 10);
+          g.moveTo(lo, y + 10);
+          g.lineTo(hi, y + 10);
+          g.stroke();
+          [lo, hi].forEach(x => {
+            g.beginPath();
+            g.arc(x, y, 20, 0, Math.PI * 2);
+            g.stroke();
+            g.beginPath();
+            g.arc(x, y, 2.5, 0, Math.PI * 2);
+            g.fill();
+          });
+          g.beginPath();
+          g.moveTo(center - 38, y);
+          g.lineTo(center + 38, y);
+          g.stroke();
+        });
+
+        [180, 720].forEach(x => {
+          g.strokeStyle = "rgba(122, 67, 35, 0.64)";
+          g.beginPath();
+          g.moveTo(x - 10, lo);
+          g.lineTo(x - 10, hi);
+          g.moveTo(x + 10, lo);
+          g.lineTo(x + 10, hi);
+          g.stroke();
+          [lo, hi].forEach(y => {
+            g.beginPath();
+            g.arc(x, y, 20, 0, Math.PI * 2);
+            g.stroke();
+            g.beginPath();
+            g.arc(x, y, 2.5, 0, Math.PI * 2);
+            g.fill();
+          });
+        });
+
+        drawArrow(g, 273, 180, 338, 338);
+        drawArrow(g, 627, 180, 562, 338);
+        drawArrow(g, 273, 720, 338, 562);
+        drawArrow(g, 627, 720, 562, 562);
+        drawArrow(g, 180, 273, 338, 338);
+        drawArrow(g, 180, 627, 338, 562);
+        drawArrow(g, 720, 273, 562, 338);
+        drawArrow(g, 720, 627, 562, 562);
+
+        g.strokeStyle = "rgba(123, 66, 34, 0.82)";
+        g.lineWidth = 1.45;
+        g.beginPath();
+        g.arc(center, center, 88, 0, Math.PI * 2);
+        g.stroke();
+        g.lineWidth = 1;
+        g.beginPath();
+        g.arc(center, center, 77, 0, Math.PI * 2);
+        g.stroke();
+        g.beginPath();
+        g.arc(center, center, 29, 0, Math.PI * 2);
+        g.stroke();
+
+        g.save();
+        g.translate(center, center);
+        g.rotate(Math.PI / 8);
+        g.beginPath();
+        for (let point = 0; point < 16; point += 1) {
+          const angle = point * Math.PI / 8;
+          const radius = point % 2 === 0 ? 59 : 26;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          if (point === 0) g.moveTo(x, y);
+          else g.lineTo(x, y);
+        }
+        g.closePath();
+        g.strokeStyle = "rgba(145, 76, 43, 0.72)";
+        g.stroke();
+        g.beginPath();
+        g.arc(0, 0, 4, 0, Math.PI * 2);
+        g.fillStyle = "rgba(138, 69, 39, 0.75)";
+        g.fill();
+        g.restore();
+
+        g.fillStyle = "rgba(128, 73, 38, 0.48)";
+        [[450, 116], [784, 450], [450, 784], [116, 450]].forEach(([x, y]) => {
+          g.beginPath();
+          g.arc(x, y, 2.2, 0, Math.PI * 2);
+          g.fill();
+        });
+        g.restore();
+      }
+
+      function drawArrow(g, x1, y1, x2, y2) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const length = Math.hypot(dx, dy);
+        const ux = dx / length;
+        const uy = dy / length;
+        const endX = x1 + ux * 34;
+        const endY = y1 + uy * 34;
+        g.save();
+        g.strokeStyle = "rgba(128, 70, 37, 0.55)";
+        g.lineWidth = 1.2;
+        g.beginPath();
+        g.moveTo(x1 + ux * 24, y1 + uy * 24);
+        g.lineTo(endX, endY);
+        g.stroke();
+        g.translate(endX, endY);
+        g.rotate(Math.atan2(uy, ux));
+        g.beginPath();
+        g.moveTo(0, 0);
+        g.lineTo(-8, -4);
+        g.lineTo(-8, 4);
+        g.closePath();
+        g.fillStyle = "rgba(128, 70, 37, 0.63)";
+        g.fill();
+        g.restore();
+      }
+
+      function drawPockets(g) {
+        pocketPoints.forEach(({ x, y }) => {
+          const outer = g.createRadialGradient(x - 6, y - 7, 4, x, y, 43);
+          outer.addColorStop(0, "#4b2c19");
+          outer.addColorStop(0.7, "#26190f");
+          outer.addColorStop(1, "#100c08");
+          g.save();
+          g.shadowColor = "rgba(26, 12, 5, 0.7)";
+          g.shadowBlur = 10;
+          g.beginPath();
+          g.arc(x, y, 41, 0, Math.PI * 2);
+          g.fillStyle = outer;
+          g.fill();
+          g.restore();
+
+          g.beginPath();
+          g.arc(x, y, 37, 0, Math.PI * 2);
+          g.strokeStyle = "rgba(241, 205, 148, 0.68)";
+          g.lineWidth = 2;
+          g.stroke();
+          g.beginPath();
+          g.arc(x, y, 32, 0, Math.PI * 2);
+          g.strokeStyle = "rgba(30, 16, 9, 0.95)";
+          g.lineWidth = 2;
+          g.stroke();
+
+          const hole = g.createRadialGradient(x - 7, y - 8, 1, x, y, 31);
+          hole.addColorStop(0, "#050505");
+          hole.addColorStop(0.64, "#100d0a");
+          hole.addColorStop(1, "#24180e");
+          g.beginPath();
+          g.arc(x, y, 30, 0, Math.PI * 2);
+          g.fillStyle = hole;
+          g.fill();
+          g.beginPath();
+          g.arc(x, y, 35, Math.PI * 1.15, Math.PI * 1.83);
+          g.strokeStyle = "rgba(255, 227, 176, 0.37)";
+          g.lineWidth = 1;
+          g.stroke();
+        });
+      }
+
+      function drawCarvedDetails(g) {
+        const corners = [
+          { x: 58, y: 58, sx: 1, sy: 1 },
+          { x: 842, y: 58, sx: -1, sy: 1 },
+          { x: 842, y: 842, sx: -1, sy: -1 },
+          { x: 58, y: 842, sx: 1, sy: -1 }
+        ];
+        corners.forEach(({ x, y, sx, sy }) => {
+          g.save();
+          g.translate(x, y);
+          g.scale(sx, sy);
+          g.strokeStyle = "rgba(242, 200, 137, 0.48)";
+          g.lineWidth = 1;
+          g.beginPath();
+          g.moveTo(7, 2);
+          g.lineTo(25, 2);
+          g.quadraticCurveTo(33, 2, 33, 10);
+          g.lineTo(33, 27);
+          g.moveTo(13, 8);
+          g.lineTo(22, 8);
+          g.quadraticCurveTo(27, 8, 27, 14);
+          g.lineTo(27, 22);
+          g.stroke();
+          g.beginPath();
+          g.arc(8, 8, 2, 0, Math.PI * 2);
+          g.fillStyle = "rgba(242, 200, 137, 0.72)";
+          g.fill();
+          g.restore();
+        });
+      }
+
+      function createRack() {
+        const rack = [{
+          id: "queen",
+          kind: "queen",
+          color: "queen",
+          x: center,
+          y: center,
+          vx: 0,
+          vy: 0,
+          r: 17,
+          mass: 1,
+          angle: 0
+        }];
+        const innerColors = ["ivory", "onyx", "ivory", "onyx", "ivory", "onyx"];
+        const outerColors = ["onyx", "ivory", "onyx", "ivory", "onyx", "ivory", "onyx", "ivory", "onyx", "ivory", "onyx", "ivory"];
+        let nextId = 0;
+
+        [
+          { radius: 35, colors: innerColors, offset: -Math.PI / 2 },
+          { radius: 70, colors: outerColors, offset: -Math.PI / 2 + Math.PI / 12 }
+        ].forEach(ring => {
+          ring.colors.forEach((color, index) => {
+            const angle = ring.offset + index * Math.PI * 2 / ring.colors.length;
+            rack.push({
+              id: `coin-${nextId++}`,
+              kind: "coin",
+              color,
+              x: center + Math.cos(angle) * ring.radius,
+              y: center + Math.sin(angle) * ring.radius,
+              vx: 0,
+              vy: 0,
+              r: 16.2,
+              mass: 1,
+              angle: Math.random() * Math.PI * 2
+            });
+          });
+        });
+        return rack;
+      }
+
+      function placeStriker(player = activePlayer) {
+        const side = player === "shade" ? "shade" : "sun";
+        const y = baseline[side];
+        const x = striker && Number.isFinite(striker.x) ? Math.max(startRange.min, Math.min(startRange.max, striker.x)) : center;
+        striker = {
+          kind: "striker",
+          color: "striker",
+          x,
+          y,
+          vx: 0,
+          vy: 0,
+          r: 23,
+          mass: 1.55,
+          angle: 0,
+          inPlay: true
+        };
+      }
+
+      function resetRack() {
+        if (cpuTimer) window.clearTimeout(cpuTimer);
+        cpuTimer = null;
+        modeButtons.forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
+        });
+        coins = createRack();
+        scores = { sun: 0, shade: 0 };
+        activePlayer = "sun";
+        shotOwner = "sun";
+        shotEvents = [];
+        strikerFoul = false;
+        aiming = null;
+        particles = [];
+        settleFrames = 0;
+        winner = null;
+        state = "ready";
+        striker = null;
+        placeStriker("sun");
+        message = mode === "human"
+          ? "Player 1 starts. Drag the striker back from the lower baseline, then release."
+          : "Your break. Drag the striker back from the lower baseline, then release.";
+        setPower(0);
+        updateInterface();
+      }
+
+      function beginMatch() {
+        if (state === "over") resetRack();
+        state = "playing";
+        activePlayer = "sun";
+        placeStriker("sun");
+        message = "Your break. Pull the striker away from the direction you want it to travel.";
+        updateInterface();
+        canvas.focus({ preventScroll: true });
+      }
+
+      function setPower(amount) {
+        const value = Math.round(Math.max(0, Math.min(1, amount)) * 100);
+        ui.powerValue.textContent = `${value}%`;
+        ui.powerFill.style.width = `${value}%`;
+      }
+
+      function updateInterface() {
+        const ivoryLeft = coins.filter(piece => piece.color === "ivory").length;
+        const onyxLeft = coins.filter(piece => piece.color === "onyx").length;
+        ui.ivoryScore.textContent = String(scores.sun).padStart(2, "0");
+        ui.shadeScore.textContent = String(scores.shade).padStart(2, "0");
+        ui.ivoryRemaining.textContent = String(ivoryLeft).padStart(2, "0");
+        ui.shadeRemaining.textContent = String(onyxLeft).padStart(2, "0");
+        ui.ivoryName.textContent = mode === "human" ? "IVORY / PLAYER 1" : "IVORY / YOU";
+        ui.shadeName.textContent = mode === "human" ? "ONYX / PLAYER 2" : "ONYX / AI";
+        ui.roundLabel.textContent = mode === "human" ? "HUMAN VS HUMAN" : "HUMAN VS AI";
+        ui.ivoryPanel.classList.toggle("is-active", state !== "over" && activePlayer === "sun");
+        ui.shadePanel.classList.toggle("is-active", state !== "over" && activePlayer === "shade");
+
+        const phase = {
+          ready: "READY",
+          playing: activePlayer === "sun" ? (mode === "human" ? "PLAYER 1 TURN" : "YOUR TURN") : (mode === "human" ? "PLAYER 2 TURN" : "AI TURN"),
+          moving: "IN MOTION",
+          cpu: "AI THINKING",
+          over: winner === "draw" ? "DRAW" : "MATCH OVER"
+        };
+        ui.roundValue.textContent = phase[state] || "READY";
+
+        const titles = {
+          ready: "Take your shot",
+          playing: activePlayer === "sun" ? (mode === "human" ? "Player 1 turn" : "Your turn") : (mode === "human" ? "Player 2 turn" : "AI to play"),
+          moving: "The board is live",
+          cpu: "AI is lining up",
+          over: winner === "draw" ? "A level table" : winner === "sun" ? (mode === "human" ? "Player 1 wins" : "You win") : (mode === "human" ? "Player 2 wins" : "AI wins")
+        };
+        const eyebrows = {
+          ready: "The break is yours",
+          playing: activePlayer === "sun" ? (mode === "human" ? "Player 1 / lower line" : "Your striker / lower line") : (mode === "human" ? "Player 2 / upper line" : "AI striker / upper line"),
+          moving: "Follow the roll",
+          cpu: "Your opponent",
+          over: "Match complete"
+        };
+        ui.turnTitle.textContent = titles[state] || "Take your shot";
+        ui.turnEyebrow.textContent = eyebrows[state] || "The Carrom Room";
+        ui.gameMessage.textContent = message;
+
+        ui.startButton.textContent = state === "ready" ? "Start match" : state === "over" ? "Play again" : state === "moving" ? "Shot in motion" : state === "cpu" ? "AI is playing" : (mode === "human" ? (activePlayer === "sun" ? "Player 1 turn" : "Player 2 turn") : "Your turn");
+        ui.startButton.disabled = state === "moving" || state === "cpu" || state === "playing";
+        ui.resetButton.disabled = state === "moving" || state === "cpu";
+        modeButtons.forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
+          button.disabled = state === "moving" || state === "cpu";
+        });
+      }
+
+      function screenPoint(event) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (event.clientX - rect.left) * size / rect.width,
+          y: (event.clientY - rect.top) * size / rect.height
+        };
+      }
+
+      function clampPull(point) {
+        const dx = point.x - striker.x;
+        const dy = point.y - striker.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance <= maxPull) return point;
+        return { x: striker.x + dx / distance * maxPull, y: striker.y + dy / distance * maxPull };
+      }
+
+      function pointerDown(event) {
+        if (state !== "playing") return;
+        const point = screenPoint(event);
+        const distance = Math.hypot(point.x - striker.x, point.y - striker.y);
+        canvas.focus({ preventScroll: true });
+
+        if (distance <= striker.r + 19) {
+          aiming = { pointerId: event.pointerId, point };
+          canvas.setPointerCapture(event.pointerId);
+          setPower(Math.min(1, distance / maxPull));
+          return;
+        }
+
+        const activeBaseline = baseline[activePlayer];
+        if (Math.abs(point.y - activeBaseline) < 42 && point.x >= startRange.min - 20 && point.x <= startRange.max + 20) {
+          striker.x = Math.max(startRange.min, Math.min(startRange.max, point.x));
+          striker.y = activeBaseline;
+        }
+      }
+
+      function pointerMove(event) {
+        if (!aiming || event.pointerId !== aiming.pointerId) return;
+        aiming.point = clampPull(screenPoint(event));
+        const distance = Math.hypot(aiming.point.x - striker.x, aiming.point.y - striker.y);
+        setPower(Math.min(1, distance / maxPull));
+      }
+
+      function pointerUp(event) {
+        if (!aiming || event.pointerId !== aiming.pointerId) return;
+        aiming.point = clampPull(screenPoint(event));
+        const dx = striker.x - aiming.point.x;
+        const dy = striker.y - aiming.point.y;
+        const pull = Math.hypot(dx, dy);
+        aiming = null;
+        setPower(0);
+        if (pull < 9) return;
+        launch(dx / pull, dy / pull, pull);
+      }
+
+      function launch(dx, dy, pull) {
+        if (state !== "playing") return;
+        shotOwner = activePlayer;
+        shotEvents = [];
+        strikerFoul = false;
+        settleFrames = 0;
+        striker.inPlay = true;
+        const speed = 2.3 + Math.min(maxPull, pull) * 0.078;
+        striker.vx = dx * speed;
+        striker.vy = dy * speed;
+        state = "moving";
+        message = "The striker is away. Watch the rebound and the pockets.";
+        updateInterface();
+      }
+
+      function launchKeyboardShot() {
+        if (state !== "playing") return;
+        launch(0, activePlayer === "sun" ? -1 : 1, 78);
+      }
+
+      function moveStriker(amount) {
+        if (state !== "playing") return;
+        striker.x = Math.max(startRange.min, Math.min(startRange.max, striker.x + amount));
+      }
+
+      function keyDown(event) {
+        if (event.target instanceof HTMLElement && event.target.closest("button, input, select, textarea")) return;
+        if (state !== "playing") return;
+        if (event.code === "ArrowLeft" || event.key.toLowerCase() === "a") {
+          event.preventDefault();
+          moveStriker(-17);
+        } else if (event.code === "ArrowRight" || event.key.toLowerCase() === "d") {
+          event.preventDefault();
+          moveStriker(17);
+        } else if (event.code === "Space") {
+          event.preventDefault();
+          launchKeyboardShot();
+        }
+      }
+
+      function getBodies() {
+        const result = coins.slice();
+        if (striker && striker.inPlay) result.push(striker);
+        return result;
+      }
+
+      function addPocketParticles(point, color) {
+        for (let i = 0; i < 13; i += 1) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 0.6 + Math.random() * 2.2;
+          particles.push({
+            x: point.x,
+            y: point.y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 0.45,
+            life: 22 + Math.random() * 17,
+            maxLife: 39,
+            color: color === "queen" ? "#d8674b" : "#e8c77f"
+          });
+        }
+      }
+
+      function capturePiece(piece, pocket) {
+        addPocketParticles(pocket, piece.color);
+        if (piece.kind === "striker") {
+          striker.inPlay = false;
+          striker.vx = 0;
+          striker.vy = 0;
+          strikerFoul = true;
+          message = "Foul. The striker fell into a pocket.";
+          return;
+        }
+
+        coins = coins.filter(item => item !== piece);
+        shotEvents.push({ color: piece.color, kind: piece.kind });
+        if (piece.kind === "queen") {
+          scores[shotOwner] += 3;
+          message = shotOwner === "sun" ? "The queen is yours. Three points." : "Onyx has claimed the queen.";
+        } else if (piece.color === shotOwner) {
+          scores[shotOwner] += 1;
+          message = shotOwner === "sun" ? "A clean color pot. You keep the turn." : "Onyx pots a piece and keeps the turn.";
+        } else {
+          message = shotOwner === "sun" ? "An opponent piece is down. The turn will pass." : "An ivory piece is down. The turn will pass.";
+        }
+      }
+
+      function physicsStep() {
+        const edge = 145;
+        const captureRadius = 55;
+
+        for (let i = coins.length - 1; i >= 0; i -= 1) {
+          const piece = coins[i];
+          piece.x += piece.vx;
+          piece.y += piece.vy;
+          piece.angle += Math.hypot(piece.vx, piece.vy) * 0.012;
+          const pocket = pocketPoints.find(hole => Math.hypot(piece.x - hole.x, piece.y - hole.y) < captureRadius);
+          if (pocket) capturePiece(piece, pocket);
+          else bounceFromEdges(piece, edge);
+        }
+
+        if (striker.inPlay) {
+          striker.x += striker.vx;
+          striker.y += striker.vy;
+          striker.angle += Math.hypot(striker.vx, striker.vy) * 0.014;
+          const pocket = pocketPoints.find(hole => Math.hypot(striker.x - hole.x, striker.y - hole.y) < captureRadius + 1);
+          if (pocket) capturePiece(striker, pocket);
+          else bounceFromEdges(striker, edge);
+        }
+
+        const liveBodies = getBodies();
+        for (let a = 0; a < liveBodies.length; a += 1) {
+          for (let b = a + 1; b < liveBodies.length; b += 1) {
+            resolveCollision(liveBodies[a], liveBodies[b]);
+          }
+        }
+
+        liveBodies.forEach(piece => {
+          piece.vx *= 0.986;
+          piece.vy *= 0.986;
+          if (Math.hypot(piece.vx, piece.vy) < 0.035) {
+            piece.vx = 0;
+            piece.vy = 0;
+          }
+        });
+
+        if (liveBodies.every(piece => Math.hypot(piece.vx, piece.vy) < 0.1)) settleFrames += 1;
+        else settleFrames = 0;
+
+        if (settleFrames > 28) finishShot();
+      }
+
+      function bounceFromEdges(piece, edge) {
+        const restitution = 0.79;
+        if (piece.x < edge) {
+          piece.x = edge;
+          piece.vx = Math.abs(piece.vx) * restitution;
+        } else if (piece.x > size - edge) {
+          piece.x = size - edge;
+          piece.vx = -Math.abs(piece.vx) * restitution;
+        }
+        if (piece.y < edge) {
+          piece.y = edge;
+          piece.vy = Math.abs(piece.vy) * restitution;
+        } else if (piece.y > size - edge) {
+          piece.y = size - edge;
+          piece.vy = -Math.abs(piece.vy) * restitution;
+        }
+      }
+
+      function resolveCollision(a, b) {
+        let dx = b.x - a.x;
+        let dy = b.y - a.y;
+        let distance = Math.hypot(dx, dy);
+        const minimum = a.r + b.r;
+        if (distance >= minimum) return;
+        if (distance < 0.001) {
+          dx = 0.01;
+          dy = 0;
+          distance = 0.01;
+        }
+
+        const nx = dx / distance;
+        const ny = dy / distance;
+        const inverseA = 1 / a.mass;
+        const inverseB = 1 / b.mass;
+        const overlap = minimum - distance;
+        a.x -= nx * overlap * inverseA / (inverseA + inverseB);
+        a.y -= ny * overlap * inverseA / (inverseA + inverseB);
+        b.x += nx * overlap * inverseB / (inverseA + inverseB);
+        b.y += ny * overlap * inverseB / (inverseA + inverseB);
+
+        const relative = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+        if (relative > 0) {
+          const impulse = (1 + 0.91) * relative / (inverseA + inverseB);
+          a.vx -= impulse * inverseA * nx;
+          a.vy -= impulse * inverseA * ny;
+          b.vx += impulse * inverseB * nx;
+          b.vy += impulse * inverseB * ny;
+        }
+      }
+
+      function finishShot() {
+        settleFrames = 0;
+        const player = shotOwner;
+        striker.vx = 0;
+        striker.vy = 0;
+        striker.inPlay = true;
+
+        const ivoryLeft = coins.some(piece => piece.color === "ivory");
+        const onyxLeft = coins.some(piece => piece.color === "onyx");
+        if (!ivoryLeft && !onyxLeft) {
+          winner = "draw";
+          state = "over";
+          message = "Both colors cleared the table. A level finish.";
+          updateInterface();
+          return;
+        }
+        if (!ivoryLeft || !onyxLeft) {
+          winner = ivoryLeft ? "shade" : "sun";
+          state = "over";
+          message = winner === "sun" ? "You cleared every ivory piece. The table is yours." : "Onyx cleared its color first. Rematch?";
+          updateInterface();
+          return;
+        }
+
+        const keptTurn = !strikerFoul && shotEvents.some(piece => piece.kind === "queen" || piece.color === player);
+        activePlayer = keptTurn ? player : player === "sun" ? "shade" : "sun";
+        if (strikerFoul) {
+          message = player === "sun" ? "Foul. Onyx takes the next turn." : "Foul by Onyx. Your turn.";
+        } else if (activePlayer === player) {
+          message = player === "sun" ? "A color pot. Stay on the table." : "Onyx pots its color and shoots again.";
+        } else {
+          message = player === "sun" ? "No clean pot. Onyx is up." : "No clean pot from Onyx. Your turn.";
+        }
+
+        state = mode === "ai" && activePlayer === "shade" ? "cpu" : "playing";
+        placeStriker(activePlayer);
+        updateInterface();
+        if (state === "cpu") scheduleCpuTurn();
+      }
+
+      function scheduleCpuTurn() {
+        if (cpuTimer) window.clearTimeout(cpuTimer);
+        cpuTimer = window.setTimeout(() => {
+          cpuTimer = null;
+          if (state === "cpu" && activePlayer === "shade") cpuShoot();
+        }, 850);
+      }
+
+      function cpuShoot() {
+        const targets = coins.filter(piece => piece.color === "onyx" || piece.kind === "queen");
+        if (!targets.length) {
+          activePlayer = "sun";
+          state = "playing";
+          placeStriker("sun");
+          message = "Your turn. Onyx has no pieces left to play.";
+          updateInterface();
+          return;
+        }
+
+        placeStriker("shade");
+        let best = null;
+        for (const piece of targets) {
+          for (const hole of pocketPoints) {
+            const pocketDx = hole.x - piece.x;
+            const pocketDy = hole.y - piece.y;
+            const pocketDistance = Math.hypot(pocketDx, pocketDy) || 1;
+            const ux = pocketDx / pocketDistance;
+            const uy = pocketDy / pocketDistance;
+            const contact = {
+              x: piece.x - ux * (piece.r + striker.r + 2),
+              y: piece.y - uy * (piece.r + striker.r + 2)
+            };
+            const startX = Math.max(startRange.min, Math.min(startRange.max, contact.x));
+            const start = { x: startX, y: baseline.shade };
+            const travel = Math.hypot(contact.x - start.x, contact.y - start.y);
+            const score = travel + pocketDistance * 0.28 + Math.abs(contact.x - start.x) * 0.16;
+            if (!best || score < best.score) best = { score, contact, start };
+          }
+        }
+
+        if (!best) {
+          striker.vx = 0;
+          striker.vy = 8;
+        } else {
+          striker.x = best.start.x;
+          const dx = best.contact.x - striker.x;
+          const dy = best.contact.y - striker.y;
+          const distance = Math.hypot(dx, dy) || 1;
+          const speed = 9.6;
+          striker.vx = dx / distance * speed;
+          striker.vy = dy / distance * speed;
+        }
+
+        shotOwner = "shade";
+        shotEvents = [];
+        strikerFoul = false;
+        settleFrames = 0;
+        striker.inPlay = true;
+        state = "moving";
+        message = "Onyx has struck. Watch the angles.";
+        updateInterface();
+      }
+
+      function drawPiece(piece, time) {
+        const { x, y, r } = piece;
+        ctx.save();
+        ctx.shadowColor = "rgba(41, 25, 12, 0.42)";
+        ctx.shadowBlur = piece.kind === "striker" ? 12 : 8;
+        ctx.shadowOffsetY = 4;
+        const shade = ctx.createRadialGradient(x - r * 0.34, y - r * 0.38, r * 0.04, x, y, r * 1.12);
+        if (piece.kind === "queen") {
+          shade.addColorStop(0, "#ffcf9f");
+          shade.addColorStop(0.2, "#c45a46");
+          shade.addColorStop(0.72, "#772d26");
+          shade.addColorStop(1, "#321713");
+        } else if (piece.kind === "striker") {
+          shade.addColorStop(0, "#fff9e9");
+          shade.addColorStop(0.36, "#e8d3a9");
+          shade.addColorStop(0.76, "#b08a50");
+          shade.addColorStop(1, "#6b4828");
+        } else if (piece.color === "ivory") {
+          shade.addColorStop(0, "#fff6dd");
+          shade.addColorStop(0.34, "#eed7a5");
+          shade.addColorStop(0.76, "#c39a5d");
+          shade.addColorStop(1, "#76512d");
+        } else {
+          shade.addColorStop(0, "#c09b67");
+          shade.addColorStop(0.28, "#715035");
+          shade.addColorStop(0.68, "#34261b");
+          shade.addColorStop(1, "#16120e");
+        }
+
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = shade;
+        ctx.fill();
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.strokeStyle = piece.kind === "striker" ? "rgba(246, 222, 163, 0.95)" : "rgba(255, 233, 189, 0.72)";
+        ctx.lineWidth = piece.kind === "striker" ? 1.8 : 1;
+        ctx.stroke();
+
+        const inset = piece.kind === "striker" ? 0.76 : 0.73;
+        const inner = ctx.createRadialGradient(x - r * 0.28, y - r * 0.34, 1, x, y, r * inset);
+        if (piece.kind === "queen") {
+          inner.addColorStop(0, "#e98564");
+          inner.addColorStop(1, "#8b372b");
+        } else if (piece.kind === "striker") {
+          inner.addColorStop(0, "#fff9e7");
+          inner.addColorStop(1, "#d0ad72");
+        } else if (piece.color === "ivory") {
+          inner.addColorStop(0, "#fff1ce");
+          inner.addColorStop(1, "#d6b16f");
+        } else {
+          inner.addColorStop(0, "#8b6d49");
+          inner.addColorStop(1, "#292019");
+        }
+        ctx.beginPath();
+        ctx.arc(x, y, r * inset, 0, Math.PI * 2);
+        ctx.fillStyle = inner;
+        ctx.fill();
+
+        ctx.strokeStyle = piece.kind === "striker" ? "rgba(134, 90, 42, 0.74)" : piece.color === "onyx" ? "rgba(222, 190, 135, 0.65)" : "rgba(122, 77, 34, 0.63)";
+        ctx.lineWidth = piece.kind === "striker" ? 1.15 : 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y, r * 0.63, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(piece.angle + (piece.kind === "queen" ? time * 0.00008 : 0));
+        if (piece.kind === "queen") {
+          ctx.beginPath();
+          for (let i = 0; i < 12; i += 1) {
+            const angle = i * Math.PI / 6;
+            const radius = i % 2 === 0 ? r * 0.42 : r * 0.22;
+            const px = Math.cos(angle) * radius;
+            const py = Math.sin(angle) * radius;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fillStyle = "rgba(255, 220, 168, 0.74)";
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(0, 0, r * 0.12, 0, Math.PI * 2);
+          ctx.fillStyle = "#72291f";
+          ctx.fill();
+        } else {
+          const detailColor = piece.kind === "striker" ? "rgba(115, 76, 34, 0.72)" : piece.color === "onyx" ? "rgba(231, 205, 158, 0.66)" : "rgba(132, 86, 40, 0.64)";
+          ctx.strokeStyle = detailColor;
+          ctx.lineWidth = piece.kind === "striker" ? 1.15 : 0.75;
+          ctx.beginPath();
+          ctx.arc(0, 0, r * 0.3, 0, Math.PI * 2);
+          ctx.stroke();
+          for (let i = 0; i < 8; i += 1) {
+            const angle = i * Math.PI / 4;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(angle) * r * 0.12, Math.sin(angle) * r * 0.12);
+            ctx.lineTo(Math.cos(angle) * r * (piece.kind === "striker" ? 0.48 : 0.43), Math.sin(angle) * r * (piece.kind === "striker" ? 0.48 : 0.43));
+            ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.arc(0, 0, piece.kind === "striker" ? r * 0.11 : r * 0.075, 0, Math.PI * 2);
+          ctx.fillStyle = detailColor;
+          ctx.fill();
+        }
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.ellipse(x - r * 0.28, y - r * 0.48, r * 0.25, r * 0.1, -0.52, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 249, 223, 0.42)";
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawAimGuide() {
+        if (!striker || !striker.inPlay || state !== "playing") return;
+        let dx = 0;
+        let dy = activePlayer === "sun" ? -1 : 1;
+        let strength = 0;
+        if (aiming) {
+          dx = striker.x - aiming.point.x;
+          dy = striker.y - aiming.point.y;
+          const length = Math.hypot(dx, dy);
+          if (length > 0.1) {
+            dx /= length;
+            dy /= length;
+          }
+          strength = Math.min(1, length / maxPull);
+          const backLength = Math.min(maxPull, length);
+          ctx.beginPath();
+          ctx.moveTo(striker.x, striker.y);
+          ctx.lineTo(striker.x - dx * backLength, striker.y - dy * backLength);
+          ctx.strokeStyle = "rgba(246, 225, 178, 0.62)";
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([3, 5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        const length = 105 + strength * 170;
+        const endX = striker.x + dx * length;
+        const endY = striker.y + dy * length;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(striker.x + dx * (striker.r + 6), striker.y + dy * (striker.r + 6));
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = aiming ? `rgba(0, 255, 255, ${0.50 + strength * 0.40})` : "rgba(120, 240, 255, 0.28)";
+        ctx.lineWidth = aiming ? 1.8 : 1.2;
+        ctx.setLineDash(aiming ? [7, 8] : [3, 9]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(endX, endY, aiming ? 3.2 : 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = aiming ? "rgba(255, 232, 182, 0.8)" : "rgba(240, 221, 181, 0.42)";
+        ctx.fill();
+        if (aiming) {
+          ctx.beginPath();
+          ctx.arc(striker.x, striker.y, striker.r + 8, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(242, 216, 160, 0.48)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawParticles() {
+        particles.forEach(particle => {
+          const alpha = Math.max(0, particle.life / particle.maxLife);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = particle.color;
+          ctx.shadowColor = particle.color;
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, 1 + alpha * 1.4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+      }
+
+      function updateParticles() {
+        particles = particles.filter(particle => particle.life > 0);
+        particles.forEach(particle => {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          particle.vx *= 0.97;
+          particle.vy *= 0.97;
+          particle.life -= 1;
+        });
+      }
+
+      function render(time) {
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(boardTexture, 0, 0);
+        drawParticles();
+        coins.forEach(piece => drawPiece(piece, time));
+        if (striker && striker.inPlay) drawPiece(striker, time);
+        drawAimGuide();
+      }
+
+      function frame(time) {
+        if (!previousFrame) previousFrame = time;
+        const elapsed = Math.min(48, time - previousFrame);
+        previousFrame = time;
+        accumulator += elapsed / (1000 / 60);
+        let updates = 0;
+        while (accumulator >= 1 && updates < 3) {
+          if (state === "moving") physicsStep();
+          updateParticles();
+          accumulator -= 1;
+          updates += 1;
+        }
+        if (state !== "moving" && particles.length) updateParticles();
+        render(time);
+        requestAnimationFrame(frame);
+      }
+
+      document.getElementById("startButton").addEventListener("click", () => {
+        if (state === "ready" || state === "over") beginMatch();
+      });
+
+      document.getElementById("resetButton").addEventListener("click", resetRack);
+
+      modeButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          if (button.dataset.mode === mode || state === "moving" || state === "cpu") return;
+          mode = button.dataset.mode;
+          resetRack();
+          message = mode === "human"
+            ? "Player 1 starts. Drag the striker back from the lower baseline, then release."
+            : "Your break. Drag the striker back from the lower baseline, then release.";
+          updateInterface();
+        });
+      });
+
+      canvas.addEventListener("pointerdown", pointerDown);
+      canvas.addEventListener("pointermove", pointerMove);
+      canvas.addEventListener("pointerup", pointerUp);
+      canvas.addEventListener("pointercancel", () => {
+        aiming = null;
+        setPower(0);
+      });
+      window.addEventListener("keydown", keyDown);
+
+      drawBoardTexture();
+      resetRack();
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html> this is another game make this game to play human vs human and human vs ai

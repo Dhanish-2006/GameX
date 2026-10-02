@@ -13,99 +13,200 @@
             padding: 0;
         }
 
+        :root {
+            --purple: #8b5cf6;
+            --purple-dark: #6d28d9;
+            --panel: rgba(25, 20, 50, 0.88);
+            --text: #f8fafc;
+        }
+
         body {
             min-height: 100vh;
-            background: #08080f;
-            color: white;
-            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.18), transparent 35%),
+                linear-gradient(135deg, #070711 0%, #0e1020 50%, #161229 100%);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .game-container {
             width: 100%;
-            max-width: 900px;
-            padding: 15px;
+            max-width: 940px;
+            padding: 18px 15px;
             text-align: center;
         }
 
         h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: clamp(28px, 4vw, 40px);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 18px rgba(139, 92, 246, 0.9);
         }
 
         .stats {
             display: flex;
             justify-content: center;
-            gap: 35px;
+            flex-wrap: wrap;
+            gap: 14px;
             margin-bottom: 12px;
-            font-size: 18px;
+        }
+
+        .stat-box {
+            min-width: 130px;
+            padding: 10px 16px;
+            border: 1px solid rgba(167, 139, 250, 0.9);
+            border-radius: 9px;
+            background: rgba(74, 44, 130, 0.38);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.22);
+            font-size: 17px;
             font-weight: bold;
+        }
+
+        .health-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 14px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .health-bar {
+            width: min(250px, 56vw);
+            height: 20px;
+            padding: 2px;
+            border: 2px solid var(--purple);
+            border-radius: 99px;
+            overflow: hidden;
+            background: #151521;
+            box-shadow: 0 0 14px rgba(139, 92, 246, 0.42);
+        }
+
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 48%, #22c55e 100%);
+            transition: width 0.18s ease;
         }
 
         .game-wrapper {
             position: relative;
             width: 800px;
             max-width: 100%;
-            margin: auto;
+            margin: 0 auto;
         }
 
         canvas {
             display: block;
             width: 100%;
             height: auto;
-            background: #555;
-            border: 3px solid #8b5cf6;
-            border-radius: 12px;
+            border: 3px solid var(--purple);
+            border-radius: 14px;
+            background: #1e293b;
+            box-shadow:
+                0 0 16px rgba(139, 92, 246, 0.85),
+                0 0 42px rgba(124, 58, 237, 0.35);
         }
 
-        .game-over {
+        .game-over,
+        .game-message {
             position: absolute;
             inset: 0;
             display: none;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            background: rgba(0, 0, 0, 0.75);
+            padding: 20px;
             border-radius: 12px;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 3;
         }
 
         .game-over h2 {
-            font-size: 42px;
             margin-bottom: 10px;
+            color: #ff5e5e;
+            font-size: clamp(34px, 6vw, 50px);
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.9);
         }
 
         .game-over p {
+            margin-bottom: 8px;
             font-size: 20px;
-            margin-bottom: 20px;
+        }
+
+        .game-over small {
+            margin-bottom: 22px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .game-message h2 {
+            margin-bottom: 10px;
+            color: #fbbf24;
+            font-size: 28px;
+        }
+
+        .game-message p {
+            max-width: 500px;
+            color: #e2e8f0;
+            line-height: 1.5;
         }
 
         button {
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            background: #8b5cf6;
+            border: 0;
+            border-radius: 9px;
+            padding: 13px 28px;
             color: white;
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            box-shadow: 0 5px 18px rgba(109, 40, 217, 0.45);
+            cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
+            transition: transform 0.18s ease, filter 0.18s ease;
         }
 
         button:hover {
-            transform: scale(1.05);
+            filter: brightness(1.14);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        button:active {
+            transform: translateY(1px) scale(0.98);
         }
 
         .controls {
-            margin-top: 15px;
+            margin: 15px auto 0;
+            padding: 11px 15px;
+            border-radius: 9px;
+            background: rgba(54, 37, 93, 0.36);
+            color: #e2e8f0;
             font-size: 15px;
-            opacity: 0.8;
+        }
+
+        .touch-controls {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .touch-controls button {
+            width: 58px;
+            height: 52px;
+            padding: 0;
+            font-size: 24px;
+            touch-action: none;
         }
 
         .back {
             display: inline-block;
-            margin-top: 15px;
+            margin-top: 16px;
             color: #c4b5fd;
             text-decoration: none;
         }
@@ -115,873 +216,852 @@
         }
 
         @media (max-width: 600px) {
-
-            h1 {
-                font-size: 25px;
+            .game-container {
+                padding: 12px 8px;
             }
 
-            .stats {
-                gap: 18px;
-                font-size: 15px;
+            .stat-box {
+                min-width: 105px;
+                padding: 8px 10px;
+                font-size: 14px;
             }
 
             .controls {
                 font-size: 13px;
             }
 
-            .game-over h2 {
-                font-size: 32px;
+            .touch-controls {
+                display: flex;
             }
         }
     </style>
 </head>
 
 <body>
+    <main class="game-container">
+        <h1>🏍️ Bike Racing — Extreme</h1>
 
-<div class="game-container">
+        <section class="stats" aria-label="Game statistics">
+            <div class="stat-box">Score: <span id="score">0</span></div>
+            <div class="stat-box">Best: <span id="best">0</span></div>
+            <div class="stat-box">Speed: <span id="speed">1.0x</span></div>
+        </section>
 
-    <h1>🏍️ Bike Racing</h1>
-
-    <div class="stats">
-        <div>
-            Score:
-            <span id="score">0</span>
+        <div class="health-row">
+            <span>Health</span>
+            <div class="health-bar" aria-label="Player health">
+                <div class="health-fill" id="health"></div>
+            </div>
+            <span id="healthText">100%</span>
         </div>
 
-        <div>
-            Best:
-            <span id="best">0</span>
+        <section class="game-wrapper">
+            <canvas id="gameCanvas" width="800" height="600">
+                Your browser does not support HTML canvas.
+            </canvas>
+
+            <div class="game-over" id="gameOver">
+                <h2>💥 CRASHED!</h2>
+                <p>Your Score: <span id="finalScore">0</span></p>
+                <small>Collect coins, avoid bikes, rocks, oil, and road barriers.</small>
+                <button id="restartButton" type="button">🔄 Restart Race</button>
+            </div>
+
+            <div class="game-message" id="gameMessage">
+                <h2>Game could not start</h2>
+                <p id="messageText">
+                    Please reload the page. Open the browser console for error details.
+                </p>
+            </div>
+        </section>
+
+        <div class="controls">
+            ⬅️ ➡️ / A D: steer &nbsp;|&nbsp; ⬆️ / W: boost &nbsp;|&nbsp; ⬇️ / S: brake
         </div>
 
-        <div>
-            Speed:
-            <span id="speed">1</span>
-        </div>
-    </div>
-
-    <div class="game-wrapper">
-
-        <canvas
-            id="gameCanvas"
-            width="800"
-            height="600">
-        </canvas>
-
-        <div class="game-over" id="gameOver">
-
-            <h2>💥 Crash!</h2>
-
-            <p>
-                Your Score:
-                <span id="finalScore">0</span>
-            </p>
-
-            <button onclick="restartGame()">
-                🔄 Restart
-            </button>
-
+        <div class="touch-controls" aria-label="Touch controls">
+            <button type="button" data-key="left" aria-label="Steer left">⬅️</button>
+            <button type="button" data-key="up" aria-label="Boost">⬆️</button>
+            <button type="button" data-key="down" aria-label="Brake">⬇️</button>
+            <button type="button" data-key="right" aria-label="Steer right">➡️</button>
         </div>
 
-    </div>
-
-    <div class="controls">
-        ⬅️ ➡️ Arrow Keys / A D to move
-    </div>
-
-    <a href="../index.html" class="back">
-        ← Back to GameX
-    </a>
-
-</div>
-
-
-<script>
-
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-
-const WIDTH = canvas.width;
-const HEIGHT = canvas.height;
-
-
-// ==============================
-// GAME VARIABLES
-// ==============================
-
-let score = 0;
-
-let bestScore =
-    Number(localStorage.getItem("gamex-bike-best")) || 0;
-
-let gameRunning = true;
-
-let roadOffset = 0;
-
-let enemyBikes = [];
-
-let coins = [];
-
-let keys = {
-    left: false,
-    right: false
-};
-
-
-// ==============================
-// ROAD
-// ==============================
-
-const road = {
-    x: 170,
-    width: 460
-};
-
-
-// ==============================
-// PLAYER BIKE
-// ==============================
-
-const player = {
-
-    width: 38,
-    height: 82,
-
-    x: WIDTH / 2 - 19,
-
-    y: HEIGHT - 125,
-
-    speed: 4
-
-};
-
-
-// ==============================
-// CREATE ENEMY BIKE
-// ==============================
-
-function createEnemyBike() {
-
-    const lanes = [
-
-        road.x + 75,
-
-        road.x + 185,
-
-        road.x + 295
-
-    ];
-
-    const lane =
-        lanes[Math.floor(Math.random() * lanes.length)];
-
-    enemyBikes.push({
-
-        x: lane,
-
-        y: -100,
-
-        width: 38,
-
-        height: 82,
-
-        speed: 2.5 + Math.random() * 1.5,
-
-        color:
-            Math.random() > 0.5
-            ? "#ef4444"
-            : "#22c55e"
-
-    });
-}
-
-
-// ==============================
-// CREATE COIN
-// ==============================
-
-function createCoin() {
-
-    const lanes = [
-
-        road.x + 75,
-
-        road.x + 185,
-
-        road.x + 295
-
-    ];
-
-    const lane =
-        lanes[Math.floor(Math.random() * lanes.length)];
-
-    coins.push({
-
-        x: lane + 10,
-
-        y: -30,
-
-        radius: 10,
-
-        speed: 3
-
-    });
-}
-
-
-// ==============================
-// DRAW ROAD
-// ==============================
-
-function drawRoad() {
-
-    // Grass
-
-    ctx.fillStyle = "#176b35";
-
-    ctx.fillRect(
-        0,
-        0,
-        WIDTH,
-        HEIGHT
-    );
-
-
-    // Road
-
-    ctx.fillStyle = "#333";
-
-    ctx.fillRect(
-        road.x,
-        0,
-        road.width,
-        HEIGHT
-    );
-
-
-    // Road edges
-
-    ctx.fillStyle = "#ddd";
-
-    ctx.fillRect(
-        road.x,
-        0,
-        7,
-        HEIGHT
-    );
-
-    ctx.fillRect(
-        road.x + road.width - 7,
-        0,
-        7,
-        HEIGHT
-    );
-
-
-    // Lane lines
-
-    ctx.fillStyle = "#fff";
-
-    const laneWidth =
-        road.width / 4;
-
-
-    for (
-        let lane = 1;
-        lane < 4;
-        lane++
-    ) {
-
-        const x =
-            road.x + lane * laneWidth;
-
-
-        for (
-            let y = -60 + roadOffset;
-            y < HEIGHT;
-            y += 100
-        ) {
-
-            ctx.fillRect(
-                x - 3,
-                y,
-                6,
-                55
-            );
-        }
-    }
-}
-
-
-// ==============================
-// DRAW BIKE
-// ==============================
-
-function drawBike(bike, color) {
-
-    const centerX =
-        bike.x + bike.width / 2;
-
-
-    // Wheels
-
-    ctx.fillStyle = "#050505";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        centerX,
-        bike.y + 13,
-        11,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        centerX,
-        bike.y + bike.height - 13,
-        11,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    // Bike body
-
-    ctx.strokeStyle = color;
-
-    ctx.lineWidth = 8;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        centerX,
-        bike.y + 18
-    );
-
-    ctx.lineTo(
-        centerX - 12,
-        bike.y + 43
-    );
-
-    ctx.lineTo(
-        centerX + 12,
-        bike.y + 43
-    );
-
-    ctx.lineTo(
-        centerX,
-        bike.y + bike.height - 18
-    );
-
-    ctx.stroke();
-
-
-    // Rider
-
-    ctx.fillStyle = "#111827";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        centerX,
-        bike.y + 30,
-        9,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    // Headlight
-
-    ctx.fillStyle = "#fef08a";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        centerX,
-        bike.y + 8,
-        5,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-}
-
-
-// ==============================
-// DRAW COIN
-// ==============================
-
-function drawCoin(coin) {
-
-    ctx.fillStyle = "#facc15";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        coin.x,
-        coin.y,
-        coin.radius,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    ctx.fillStyle = "#92400e";
-
-    ctx.font = "bold 13px Arial";
-
-    ctx.textAlign = "center";
-
-    ctx.textBaseline = "middle";
-
-    ctx.fillText(
-        "$",
-        coin.x,
-        coin.y
-    );
-}
-
-
-// ==============================
-// COLLISION
-// ==============================
-
-function collision(a, b) {
-
-    return (
-
-        a.x < b.x + b.width &&
-
-        a.x + a.width > b.x &&
-
-        a.y < b.y + b.height &&
-
-        a.y + a.height > b.y
-
-    );
-}
-
-
-// ==============================
-// COIN COLLISION
-// ==============================
-
-function collectCoin(bike, coin) {
-
-    return (
-
-        bike.x < coin.x + coin.radius &&
-
-        bike.x + bike.width >
-            coin.x - coin.radius &&
-
-        bike.y < coin.y + coin.radius &&
-
-        bike.y + bike.height >
-            coin.y - coin.radius
-
-    );
-}
-
-
-// ==============================
-// UPDATE
-// ==============================
-
-function update() {
-
-    if (!gameRunning) {
-        return;
-    }
-
-
-    // Player movement
-
-    if (keys.left) {
-
-        player.x -= player.speed;
-    }
-
-    if (keys.right) {
-
-        player.x += player.speed;
-    }
-
-
-    // Keep bike on road
-
-    const leftLimit =
-        road.x + 20;
-
-    const rightLimit =
-        road.x +
-        road.width -
-        player.width -
-        20;
-
-
-    if (player.x < leftLimit) {
-
-        player.x = leftLimit;
-    }
-
-    if (player.x > rightLimit) {
-
-        player.x = rightLimit;
-    }
-
-
-    // Road movement
-
-    roadOffset += 3;
-
-    if (roadOffset >= 100) {
-
-        roadOffset = 0;
-    }
-
-
-    // Enemy bikes
-
-   enemyBikes.forEach(bike => {
-
-    // Move enemy bike downward
-    bike.y +=
-        bike.speed +
-        score * 0.005;
-
-    // If player is near the edge,
-    // enemy bike moves toward the player
-    if (player.x < road.x + 80) {
-        bike.x -= 1.5;
-    }
-
-    if (player.x > road.x + road.width - 120) {
-        bike.x += 1.5;
-    }
-
-    // Collision
-    if (collision(player, bike)) {
-        endGame();
-    }
-
-});
-
-
-    // Remove enemy bikes
-
-    enemyBikes =
-        enemyBikes.filter(bike => {
-
-            if (bike.y > HEIGHT) {
-
-                score += 10;
-
-                document.getElementById(
-                    "score"
-                ).textContent = score;
-
-                return false;
+        <a href="../index.html" class="back">← Back to GameX</a>
+    </main>
+
+    <script>
+        "use strict";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById("gameCanvas");
+            const scoreElement = document.getElementById("score");
+            const bestElement = document.getElementById("best");
+            const speedElement = document.getElementById("speed");
+            const healthElement = document.getElementById("health");
+            const healthTextElement = document.getElementById("healthText");
+            const gameOverElement = document.getElementById("gameOver");
+            const finalScoreElement = document.getElementById("finalScore");
+            const restartButton = document.getElementById("restartButton");
+            const messageElement = document.getElementById("gameMessage");
+            const messageTextElement = document.getElementById("messageText");
+
+            if (!canvas) {
+                console.error("Game initialization failed: #gameCanvas does not exist.");
+                return;
             }
 
-            return true;
-        });
-
-
-    // Coins
-
-    coins.forEach(coin => {
-
-        coin.y += coin.speed;
-
-
-        if (collectCoin(player, coin)) {
-
-            score += 25;
-
-            document.getElementById(
-                "score"
-            ).textContent = score;
-
-            coin.collected = true;
-        }
-
-    });
-
-
-    coins =
-        coins.filter(coin => {
-
-            return (
-                !coin.collected &&
-                coin.y < HEIGHT + 30
-            );
-
-        });
-
-
-    // Difficulty
-
-    const gameSpeed =
-        Math.min(
-            1 + Math.floor(score / 100),
-            10
-        );
-
-
-    document.getElementById(
-        "speed"
-    ).textContent = gameSpeed;
-}
-
-
-// ==============================
-// DRAW
-// ==============================
-
-function draw() {
-
-    ctx.clearRect(
-        0,
-        0,
-        WIDTH,
-        HEIGHT
-    );
-
-
-    drawRoad();
-
-
-    // Coins
-
-    coins.forEach(coin => {
-
-        drawCoin(coin);
-
-    });
-
-
-    // Player bike
-
-    drawBike(
-        player,
-        "#8b5cf6"
-    );
-
-
-    // Enemy bikes
-
-    enemyBikes.forEach(bike => {
-
-        drawBike(
-            bike,
-            bike.color
-        );
-
-    });
-}
-
-
-// ==============================
-// GAME LOOP
-// ==============================
-
-function gameLoop() {
-
-    update();
-
-    draw();
-
-    requestAnimationFrame(
-        gameLoop
-    );
-}
-
-
-// ==============================
-// ENEMY SPAWN
-// ==============================
-
-setInterval(() => {
-
-    if (gameRunning) {
-
-        createEnemyBike();
-    }
-
-}, 1300);
-
-
-// ==============================
-// COIN SPAWN
-// ==============================
-
-setInterval(() => {
-
-    if (gameRunning) {
-
-        createCoin();
-    }
-
-}, 1800);
-
-
-// ==============================
-// KEYBOARD
-// ==============================
-
-document.addEventListener(
-    "keydown",
-    e => {
-
-        if (
-            e.key === "ArrowLeft" ||
-            e.key.toLowerCase() === "a"
-        ) {
-
-            keys.left = true;
-
-            e.preventDefault();
-        }
-
-
-        if (
-            e.key === "ArrowRight" ||
-            e.key.toLowerCase() === "d"
-        ) {
-
-            keys.right = true;
-
-            e.preventDefault();
-        }
-
-    }
-);
-
-
-document.addEventListener(
-    "keyup",
-    e => {
-
-        if (
-            e.key === "ArrowLeft" ||
-            e.key.toLowerCase() === "a"
-        ) {
-
-            keys.left = false;
-        }
-
-
-        if (
-            e.key === "ArrowRight" ||
-            e.key.toLowerCase() === "d"
-        ) {
-
-            keys.right = false;
-        }
-
-    }
-);
-
-
-// ==============================
-// GAME OVER
-// ==============================
-
-function endGame() {
-
-    gameRunning = false;
-
-
+            const ctx = canvas.getContext("2d");
+
+            if (!ctx) {
+                console.error("Game initialization failed: Canvas 2D context is unavailable.");
+                messageElement.style.display = "flex";
+                return;
+            }
+
+            const WIDTH = canvas.width;
+            const HEIGHT = canvas.height;
+
+            const road = {
+                x: 145,
+                width: 510,
+                lanes: 4
+            };
+
+            const keys = {
+                left: false,
+                right: false,
+                up: false,
+                down: false
+            };
+
+            const player = {
+                width: 42,
+                height: 88,
+                x: WIDTH / 2 - 21,
+                y: HEIGHT - 138,
+                velocityX: 0,
+                lean: 0,
+                health: 100,
+                maxHealth: 100,
+                baseSpeed: 5,
+                currentSpeed: 5,
+                maxSpeed: 10.5,
+                invincibleFrames: 0
+            };
+
+            let score = 0;
+            let bestScore = Number(localStorage.getItem("gamex-bike-best")) || 0;
+            let gameRunning = true;
+            let roadOffset = 0;
+            let frame = 0;
+            let difficulty = 1;
+            let enemyBikes = [];
+            let coins = [];
+            let obstacles = [];
+            let particles = [];
+
+            bestElement.textContent = String(bestScore);
+
+            function laneCenter(laneIndex) {
+                const laneWidth = road.width / road.lanes;
+                return road.x + laneWidth * laneIndex + laneWidth / 2;
+            }
+
+            function randomLaneX(objectWidth) {
+                const lane = Math.floor(Math.random() * road.lanes);
+                return laneCenter(lane) - objectWidth / 2;
+            }
+
+            function updateHud() {
+                scoreElement.textContent = String(score);
+                bestElement.textContent = String(bestScore);
+
+                const speedMultiplier = player.currentSpeed / player.baseSpeed;
+                speedElement.textContent = speedMultiplier.toFixed(1) + "x";
+
+                const healthPercent = Math.max(
+                    0,
+                    Math.min(100, (player.health / player.maxHealth) * 100)
+                );
+
+                healthElement.style.width = healthPercent + "%";
+                healthTextElement.textContent = Math.ceil(healthPercent) + "%";
+            }
+
+            function createEnemyBike() {
+                const aggressive = Math.random() < Math.min(0.18 + difficulty * 0.025, 0.48);
+
+                enemyBikes.push({
+                    x: randomLaneX(42),
+                    y: -120,
+                    width: 42,
+                    height: 88,
+                    speed: 3 + difficulty * 0.55 + Math.random() * 1.9,
+                    color: ["#ef4444", "#22c55e", "#3b82f6", "#f97316", "#e11d48"][
+                        Math.floor(Math.random() * 5)
+                    ],
+                    aggressive,
+                    driftSeed: Math.random() * Math.PI * 2,
+                    hit: false
+                });
+            }
+
+            function createCoin() {
+                coins.push({
+                    x: randomLaneX(25) + 12,
+                    y: -35,
+                    radius: 12,
+                    speed: 3.1 + difficulty * 0.18,
+                    value: 25 + Math.floor(difficulty * 5),
+                    pulse: Math.random() * Math.PI * 2,
+                    collected: false
+                });
+            }
+
+            function createObstacle() {
+                const rock = Math.random() < 0.62;
+
+                obstacles.push({
+                    x: randomLaneX(48),
+                    y: -70,
+                    width: 48,
+                    height: 48,
+                    speed: 3 + difficulty * 0.38,
+                    type: rock ? "rock" : "oil",
+                    rotation: Math.random() * Math.PI * 2,
+                    hit: false
+                });
+            }
+
+            function createParticles(x, y, color, amount) {
+                for (let i = 0; i < amount; i++) {
+                    particles.push({
+                        x,
+                        y,
+                        vx: (Math.random() - 0.5) * 9,
+                        vy: (Math.random() - 0.5) * 9,
+                        gravity: 0.14 + Math.random() * 0.16,
+                        life: 1,
+                        decay: 0.02 + Math.random() * 0.025,
+                        size: 2 + Math.random() * 5,
+                        color
+                    });
+                }
+            }
+
+            function isRectCollision(a, b) {
+                return (
+                    a.x < b.x + b.width &&
+                    a.x + a.width > b.x &&
+                    a.y < b.y + b.height &&
+                    a.y + a.height > b.y
+                );
+            }
+
+            function isCoinCollected(coin) {
+                const bikeCenterX = player.x + player.width / 2;
+                const bikeCenterY = player.y + player.height / 2;
+                const dx = bikeCenterX - coin.x;
+                const dy = bikeCenterY - coin.y;
+
+                return Math.sqrt(dx * dx + dy * dy) < 34;
+            }
+
+            function damagePlayer(amount) {
+                if (player.invincibleFrames > 0 || !gameRunning) {
+                    return;
+                }
+
+                player.health -= amount;
+                player.invincibleFrames = 52;
+
+                createParticles(
+                    player.x + player.width / 2,
+                    player.y + player.height / 2,
+                    "#ef4444",
+                    18
+                );
+
+                if (player.health <= 0) {
+                    player.health = 0;
+                    endGame();
+                }
+
+                updateHud();
+            }
+
+            function drawRoad() {
+                ctx.fillStyle = "#166534";
+                ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+                ctx.fillStyle = "#14532d";
+                for (let i = 0; i < 60; i++) {
+                    const x = (i * 79 + 20) % WIDTH;
+                    const y = (i * 97 + roadOffset * 0.45) % HEIGHT;
+                    ctx.fillRect(x, y, 3, 10);
+                }
+
+                ctx.fillStyle = "#303030";
+                ctx.fillRect(road.x, 0, road.width, HEIGHT);
+
+                ctx.fillStyle = "#3d3d3d";
+                for (let i = 0; i < 120; i++) {
+                    const x = road.x + ((i * 53) % road.width);
+                    const y = (i * 41 + roadOffset) % HEIGHT;
+                    ctx.fillRect(x, y, 2, 4);
+                }
+
+                for (let y = -40 + (roadOffset % 40); y < HEIGHT; y += 40) {
+                    ctx.fillStyle = "#dc2626";
+                    ctx.fillRect(road.x - 10, y, 10, 20);
+                    ctx.fillRect(road.x + road.width, y, 10, 20);
+
+                    ctx.fillStyle = "#f8fafc";
+                    ctx.fillRect(road.x - 10, y + 20, 10, 20);
+                    ctx.fillRect(road.x + road.width, y + 20, 10, 20);
+                }
+
+                ctx.fillStyle = "#f8fafc";
+                ctx.fillRect(road.x, 0, 7, HEIGHT);
+                ctx.fillRect(road.x + road.width - 7, 0, 7, HEIGHT);
+
+                const laneWidth = road.width / road.lanes;
+
+                for (let lane = 1; lane < road.lanes; lane++) {
+                    const x = road.x + lane * laneWidth;
+
+                    for (let y = -65 + (roadOffset % 90); y < HEIGHT; y += 90) {
+                        ctx.fillRect(x - 4, y, 8, 48);
+                    }
+                }
+            }
+
+            function drawBike(bike, color, isPlayer) {
+                const centerX = bike.x + bike.width / 2;
+                const lean = isPlayer ? player.lean : 0;
+
+                ctx.save();
+
+                ctx.fillStyle = "rgba(0, 0, 0, 0.38)";
+                ctx.beginPath();
+                ctx.ellipse(centerX + 4, bike.y + bike.height - 6, 18, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#09090b";
+                ctx.beginPath();
+                ctx.arc(centerX, bike.y + 15, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(centerX, bike.y + bike.height - 15, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = "#94a3b8";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, bike.y + 15, 7, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(centerX, bike.y + bike.height - 15, 7, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 9;
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                ctx.beginPath();
+                ctx.moveTo(centerX, bike.y + 20);
+                ctx.lineTo(centerX - 15 + lean, bike.y + 47);
+                ctx.lineTo(centerX + 15 + lean, bike.y + 47);
+                ctx.lineTo(centerX, bike.y + bike.height - 20);
+                ctx.stroke();
+
+                ctx.fillStyle = "#111827";
+                ctx.fillRect(centerX - 10, bike.y + 48, 20, 26);
+
+                ctx.strokeStyle = "#9ca3af";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(centerX - 7, bike.y + 58);
+                ctx.lineTo(centerX - 14, bike.y + bike.height - 25);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(centerX + 7, bike.y + 58);
+                ctx.lineTo(centerX + 14, bike.y + bike.height - 25);
+                ctx.stroke();
+
+                ctx.fillStyle = "#111827";
+                ctx.beginPath();
+                ctx.ellipse(centerX + lean * 0.4, bike.y + 36, 12, 18, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(centerX + lean * 0.3, bike.y + 22, 11, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#0f172a";
+                ctx.beginPath();
+                ctx.arc(centerX + lean * 0.3 + 3, bike.y + 20, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#fef08a";
+                ctx.beginPath();
+                ctx.arc(centerX, bike.y + 9, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (isPlayer && keys.down) {
+                    ctx.fillStyle = "#ef4444";
+                    ctx.beginPath();
+                    ctx.arc(centerX, bike.y + bike.height - 8, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            function drawCoin(coin) {
+                coin.pulse += 0.1;
+                const pulse = Math.sin(coin.pulse) * 1.7;
+
+                ctx.fillStyle = "rgba(250, 204, 21, 0.23)";
+                ctx.beginPath();
+                ctx.arc(coin.x, coin.y, coin.radius + 9 + pulse, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#facc15";
+                ctx.beginPath();
+                ctx.arc(coin.x, coin.y, coin.radius + pulse, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = "#92400e";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(coin.x, coin.y, coin.radius + pulse, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = "#78350f";
+                ctx.font = "bold 15px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("$", coin.x, coin.y);
+            }
+
+            function drawObstacle(obstacle) {
+                const centerX = obstacle.x + obstacle.width / 2;
+                const centerY = obstacle.y + obstacle.height / 2;
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(obstacle.rotation);
+
+                if (obstacle.type === "rock") {
+                    ctx.fillStyle = "#6b7280";
+                    ctx.beginPath();
+                    ctx.moveTo(0, -24);
+                    ctx.lineTo(19, -11);
+                    ctx.lineTo(24, 13);
+                    ctx.lineTo(8, 24);
+                    ctx.lineTo(-16, 19);
+                    ctx.lineTo(-24, 2);
+                    ctx.lineTo(-17, -20);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = "#9ca3af";
+                    ctx.beginPath();
+                    ctx.arc(-6, -6, 7, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.76)";
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 28, 17, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+                    ctx.beginPath();
+                    ctx.ellipse(-7, -5, 13, 6, 0.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            function updateParticles() {
+                particles = particles.filter((particle) => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.vy += particle.gravity;
+                    particle.life -= particle.decay;
+
+                    return particle.life > 0;
+                });
+            }
+
+            function drawParticles() {
+                for (const particle of particles) {
+                    ctx.globalAlpha = Math.max(0, particle.life);
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(
+                        particle.x,
+                        particle.y,
+                        Math.max(1, particle.size * particle.life),
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+
+                ctx.globalAlpha = 1;
+            }
+
+            function update() {
+                if (!gameRunning) {
+                    updateParticles();
+                    return;
+                }
+
+                frame++;
+
+                if (keys.left) {
+                    player.velocityX -= 0.72;
+                    player.lean = Math.max(-13, player.lean - 1.8);
+                }
+
+                if (keys.right) {
+                    player.velocityX += 0.72;
+                    player.lean = Math.min(13, player.lean + 1.8);
+                }
+
+                if (!keys.left && !keys.right) {
+                    player.lean *= 0.86;
+                }
+
+                if (keys.up) {
+                    player.currentSpeed = Math.min(
+                        player.maxSpeed,
+                        player.currentSpeed + 0.075
+                    );
+                } else if (keys.down) {
+                    player.currentSpeed = Math.max(
+                        player.baseSpeed * 0.52,
+                        player.currentSpeed - 0.16
+                    );
+                } else {
+                    player.currentSpeed += (player.baseSpeed - player.currentSpeed) * 0.018;
+                }
+
+                player.velocityX *= 0.84;
+                player.x += player.velocityX * (player.currentSpeed / player.baseSpeed);
+
+                const leftLimit = road.x + 14;
+                const rightLimit = road.x + road.width - player.width - 14;
+
+                if (player.x < leftLimit) {
+                    player.x = leftLimit;
+                    player.velocityX *= -0.4;
+                    damagePlayer(0.35);
+                }
+
+                if (player.x > rightLimit) {
+                    player.x = rightLimit;
+                    player.velocityX *= -0.4;
+                    damagePlayer(0.35);
+                }
+
+                if (player.invincibleFrames > 0) {
+                    player.invincibleFrames--;
+                }
+
+                difficulty = 1 + Math.floor(score / 150) * 0.45;
+
+                roadOffset += 3 + difficulty * 0.42 + player.currentSpeed * 0.15;
+                if (roadOffset >= 90) {
+                    roadOffset %= 90;
+                }
+
+                const enemyInterval = Math.max(32, Math.floor(96 - difficulty * 7));
+                const coinInterval = Math.max(54, Math.floor(132 - difficulty * 5));
+                const obstacleInterval = Math.max(120, Math.floor(245 - difficulty * 13));
+
+                if (frame % enemyInterval === 0) {
+                    createEnemyBike();
+                }
+
+                if (frame % coinInterval === 0) {
+                    createCoin();
+                }
+
+                if (difficulty >= 1.9 && frame % obstacleInterval === 0) {
+                    createObstacle();
+                }
+
+                for (const bike of enemyBikes) {
+                    bike.y += bike.speed + difficulty * 0.25;
+
+                    if (bike.aggressive && bike.y > 20 && bike.y < player.y) {
+                        const playerCenter = player.x + player.width / 2;
+                        const bikeCenter = bike.x + bike.width / 2;
+                        bike.x += Math.sign(playerCenter - bikeCenter) * (0.38 + difficulty * 0.075);
+                    } else {
+                        bike.x += Math.sin(frame * 0.045 + bike.driftSeed) * 0.6;
+                    }
+
+                    bike.x = Math.max(
+                        road.x + 10,
+                        Math.min(road.x + road.width - bike.width - 10, bike.x)
+                    );
+
+                    if (!bike.hit && isRectCollision(player, bike)) {
+                       bike.hit = true;
+
+                       createParticles(
+                           player.x + player.width / 2,
+                           player.y + player.height / 2,
+                            "#ef4444",
+                            45
+                      );
+
+                     createParticles(
+                       player.x + player.width / 2,
+                       player.y + player.height / 2,
+                       "#f59e0b",
+                        30
+                     );
+
+                     endGame();
+                      return;
+                 }
+                }
+
+                enemyBikes = enemyBikes.filter((bike) => {
+                    if (bike.y > HEIGHT + 120) {
+                        score += 15;
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                for (const coin of coins) {
+                    coin.y += coin.speed + difficulty * 0.2;
+
+                    if (!coin.collected && isCoinCollected(coin)) {
+                        coin.collected = true;
+                        score += coin.value;
+                        createParticles(coin.x, coin.y, "#facc15", 10);
+                    }
+                }
+
+                coins = coins.filter(
+                    (coin) => !coin.collected && coin.y < HEIGHT + 50
+                );
+
+                for (const obstacle of obstacles) {
+                    obstacle.y += obstacle.speed + difficulty * 0.25;
+                    obstacle.rotation += obstacle.type === "rock" ? 0.025 : 0.006;
+
+                    if (!obstacle.hit && isRectCollision(player, obstacle)) {
+                        obstacle.hit = true;
+
+                        if (obstacle.type === "rock") {
+                            damagePlayer(33);
+                        } else {
+                            damagePlayer(16);
+                            player.currentSpeed *= 0.52;
+                            player.velocityX *= 1.45;
+                        }
+                    }
+                }
+
+                obstacles = obstacles.filter(
+                    (obstacle) => obstacle.y < HEIGHT + 80
+                );
+
+                updateParticles();
+                updateHud();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+                drawRoad();
+
+                for (const coin of coins) {
+                    drawCoin(coin);
+                }
+
+                for (const obstacle of obstacles) {
+                    drawObstacle(obstacle);
+                }
+
+                for (const bike of enemyBikes) {
+                    drawBike(bike, bike.color, false);
+                }
+
+                const shouldFlash =
+                    player.invincibleFrames > 0 &&
+                    Math.floor(player.invincibleFrames / 4) % 2 === 0;
+
+                if (!shouldFlash) {
+                    drawBike(player, "#8b5cf6", true);
+                }
+
+                if (player.currentSpeed > player.maxSpeed * 0.82) {
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                    ctx.lineWidth = 2;
+
+                    for (let i = 0; i < 10; i++) {
+                        const x = Math.random() * WIDTH;
+                        const y = Math.random() * HEIGHT;
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x, y + 32 + player.currentSpeed * 2.8);
+                        ctx.stroke();
+                    }
+                }
+
+                drawParticles();
+            }
+           function endGame() {
+            if (!gameRunning) {
+             return;
+          }
+
+     gameRunning = false;
+
+    // Stop all player movement immediately.
+    player.velocityX = 0;
+    player.currentSpeed = 0;
+    player.health = 0;
+
+    // Save high score.
     if (score > bestScore) {
-
         bestScore = score;
-
-        localStorage.setItem(
-            "gamex-bike-best",
-            bestScore
-        );
+        localStorage.setItem("gamex-bike-best", String(bestScore));
     }
 
+    // Update UI.
+    finalScoreElement.textContent = String(score);
+    bestElement.textContent = String(bestScore);
+    healthElement.style.width = "0%";
+    healthTextElement.textContent = "0%";
 
-    document.getElementById(
-        "best"
-    ).textContent = bestScore;
-
-
-    document.getElementById(
-        "finalScore"
-    ).textContent = score;
-
-
-    document.getElementById(
-        "gameOver"
-    ).style.display = "flex";
+    // Show crash screen. The game will stay here until Restart Race is clicked.
+    gameOverElement.style.display = "flex";
 }
+            
+           
+            function restartGame() {
+                score = 0;
+                frame = 0;
+                difficulty = 1;
+                roadOffset = 0;
+                gameRunning = true;
 
+                enemyBikes = [];
+                coins = [];
+                obstacles = [];
+                particles = [];
 
-// ==============================
-// RESTART
-// ==============================
+                player.x = WIDTH / 2 - player.width / 2;
+                player.velocityX = 0;
+                player.lean = 0;
+                player.health = player.maxHealth;
+                player.currentSpeed = player.baseSpeed;
+                player.invincibleFrames = 0;
 
-function restartGame() {
+                keys.left = false;
+                keys.right = false;
+                keys.up = false;
+                keys.down = false;
 
-    score = 0;
+                gameOverElement.style.display = "none";
+                updateHud();
+            }
 
-    player.x =
-        WIDTH / 2 -
-        player.width / 2;
+            function gameLoop() {
+                try {
+                    update();
+                    draw();
+                    requestAnimationFrame(gameLoop);
+                } catch (error) {
+                    gameRunning = false;
+                    console.error("Bike Racing game error:", error);
 
-    enemyBikes = [];
+                    messageTextElement.textContent =
+                        "A JavaScript error stopped the game. Open F12 → Console to view the full error.";
 
-    coins = [];
+                    messageElement.style.display = "flex";
+                }
+            }
 
-    roadOffset = 0;
+            function setKeyFromKeyboard(event, pressed) {
+                const key = event.key.toLowerCase();
 
-    gameRunning = true;
+                if (key === "arrowleft" || key === "a") {
+                    keys.left = pressed;
+                    event.preventDefault();
+                }
 
+                if (key === "arrowright" || key === "d") {
+                    keys.right = pressed;
+                    event.preventDefault();
+                }
 
-    document.getElementById(
-        "score"
-    ).textContent = "0";
+                if (key === "arrowup" || key === "w") {
+                    keys.up = pressed;
+                    event.preventDefault();
+                }
 
+                if (key === "arrowdown" || key === "s") {
+                    keys.down = pressed;
+                    event.preventDefault();
+                }
+            }
 
-    document.getElementById(
-        "speed"
-    ).textContent = "1";
+            document.addEventListener("keydown", (event) => {
+                setKeyFromKeyboard(event, true);
+            });
 
+            document.addEventListener("keyup", (event) => {
+                setKeyFromKeyboard(event, false);
+            });
 
-    document.getElementById(
-        "gameOver"
-    ).style.display = "none";
-}
+            window.addEventListener("blur", () => {
+                keys.left = false;
+                keys.right = false;
+                keys.up = false;
+                keys.down = false;
+            });
 
+            document.querySelectorAll("[data-key]").forEach((button) => {
+                const keyName = button.dataset.key;
 
-// ==============================
-// START
-// ==============================
+                const press = (event) => {
+                    event.preventDefault();
+                    keys[keyName] = true;
+                };
 
-document.getElementById(
-    "best"
-).textContent = bestScore;
+                const release = (event) => {
+                    event.preventDefault();
+                    keys[keyName] = false;
+                };
 
+                button.addEventListener("pointerdown", press);
+                button.addEventListener("pointerup", release);
+                button.addEventListener("pointerleave", release);
+                button.addEventListener("pointercancel", release);
+            });
 
-gameLoop();
+            restartButton.addEventListener("click", restartGame);
 
-</script>
-
+            updateHud();
+            gameLoop();
+        });
+    </script>
 </body>
 </html>

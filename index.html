@@ -2,26 +2,39 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>GameX - Play Free Games</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
+
 <!-- =====================================================
-     TOP NAVIGATION
+     HEADER
 ===================================================== -->
 
 <header class="header">
 
     <div class="logo">
+
         <span class="logo-icon">🎮</span>
-        <span class="logo-text">Game<span>X</span></span>
+
+        <span class="logo-text">
+            Game<span>X</span>
+        </span>
+
     </div>
+
 
     <nav class="navbar">
 
@@ -43,31 +56,42 @@
 
     </nav>
 
+
     <div class="header-actions">
 
         <button
             class="header-btn"
             id="searchBtn"
             title="Search">
+
             🔍
+
         </button>
+
 
         <button
             class="header-btn"
             id="themeBtn"
             title="Theme">
+
             🌙
+
         </button>
+
 
         <button
             class="menu-btn"
-            id="menuBtn">
+            id="menuBtn"
+            title="Menu">
+
             ☰
+
         </button>
 
     </div>
 
 </header>
+
 
 
 <!-- =====================================================
@@ -92,6 +116,7 @@
 </section>
 
 
+
 <main>
 
 
@@ -103,25 +128,41 @@
 
     <div class="featured-background"></div>
 
+
     <div class="featured-content">
 
         <div class="featured-badge">
+
             🔥 FEATURED GAME
+
         </div>
 
+
         <p class="featured-category">
+
             ACTION • ADVENTURE
+
         </p>
+
 
         <h1>
+
             SPIDER-MAN
-            <span>WEB SWING</span>
+
+            <span>
+                WEB SWING
+            </span>
+
         </h1>
 
+
         <p class="featured-description">
+
             Swing through the city, explore huge buildings
             and experience an exciting browser adventure.
+
         </p>
+
 
         <div class="featured-buttons">
 
@@ -133,6 +174,7 @@
 
             </button>
 
+
             <button
                 class="featured-explore"
                 id="exploreBtn">
@@ -143,21 +185,39 @@
 
         </div>
 
+
         <div class="featured-stats">
 
             <div>
-                <strong>19+</strong>
-                <span>Games</span>
+
+                <strong>20+</strong>
+
+                <span>
+                    Games
+                </span>
+
             </div>
 
+
             <div>
+
                 <strong>FREE</strong>
-                <span>To Play</span>
+
+                <span>
+                    To Play
+                </span>
+
             </div>
 
+
             <div>
+
                 <strong>WEB</strong>
-                <span>Browser</span>
+
+                <span>
+                    Browser
+                </span>
+
             </div>
 
         </div>
@@ -165,9 +225,11 @@
     </div>
 
 
+
     <div class="featured-art">
 
         <div class="art-glow"></div>
+
 
         <div class="art-circle">
 
@@ -175,21 +237,31 @@
 
         </div>
 
+
         <div class="floating-card card-one">
+
             🎮
+
         </div>
+
 
         <div class="floating-card card-two">
+
             ⚡
+
         </div>
 
+
         <div class="floating-card card-three">
+
             🏆
+
         </div>
 
     </div>
 
 </section>
+
 
 
 <!-- =====================================================
@@ -201,6 +273,7 @@
     <div class="section-heading">
 
         <div>
+
             <span class="section-label">
                 POPULAR
             </span>
@@ -208,11 +281,13 @@
             <h2>
                 🔥 Trending Now
             </h2>
+
         </div>
+
 
         <button
             class="small-link"
-            onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">
+            onclick="scrollToGames()">
 
             View all →
 
@@ -221,22 +296,39 @@
     </div>
 
 
+
     <div class="trending-grid">
 
+
+        <!-- SNAKE -->
 
         <div
             class="trend-card"
             onclick="openGame('games/snake.html')">
 
             <div class="trend-image snake-bg">
+
                 🐍
+
             </div>
 
+
             <div class="trend-info">
-                <span>ARCADE</span>
-                <h3>Snake</h3>
-                <p>Classic arcade</p>
+
+                <span>
+                    ARCADE
+                </span>
+
+                <h3>
+                    Snake
+                </h3>
+
+                <p>
+                    Classic arcade
+                </p>
+
             </div>
+
 
             <div class="trend-arrow">
                 →
@@ -244,20 +336,37 @@
 
         </div>
 
+
+
+        <!-- CAR -->
 
         <div
             class="trend-card"
             onclick="openGame('games/car.html')">
 
             <div class="trend-image car-bg">
+
                 🚗
+
             </div>
 
+
             <div class="trend-info">
-                <span>RACING</span>
-                <h3>Car Racing</h3>
-                <p>Dodge traffic</p>
+
+                <span>
+                    RACING
+                </span>
+
+                <h3>
+                    Car Racing
+                </h3>
+
+                <p>
+                    Dodge traffic
+                </p>
+
             </div>
+
 
             <div class="trend-arrow">
                 →
@@ -265,20 +374,37 @@
 
         </div>
 
+
+
+        <!-- BIKE -->
 
         <div
             class="trend-card"
             onclick="openGame('games/bike.html')">
 
             <div class="trend-image bike-bg">
+
                 🏍️
+
             </div>
 
+
             <div class="trend-info">
-                <span>RACING</span>
-                <h3>Bike Racing</h3>
-                <p>Race & collect</p>
+
+                <span>
+                    RACING
+                </span>
+
+                <h3>
+                    Bike Racing
+                </h3>
+
+                <p>
+                    Race & collect
+                </p>
+
             </div>
+
 
             <div class="trend-arrow">
                 →
@@ -287,19 +413,36 @@
         </div>
 
 
+
+        <!-- ZOMBIE -->
+
         <div
             class="trend-card"
             onclick="openGame('games/zombie-survival.html')">
 
             <div class="trend-image zombie-bg">
+
                 🧟
+
             </div>
 
+
             <div class="trend-info">
-                <span>ACTION</span>
-                <h3>Zombie Survival</h3>
-                <p>Survive waves</p>
+
+                <span>
+                    ACTION
+                </span>
+
+                <h3>
+                    Zombie Survival
+                </h3>
+
+                <p>
+                    Survive waves
+                </p>
+
             </div>
+
 
             <div class="trend-arrow">
                 →
@@ -310,6 +453,7 @@
     </div>
 
 </section>
+
 
 
 <!-- =====================================================
@@ -335,6 +479,7 @@
 
         </div>
 
+
         <button
             class="small-link"
             id="viewAllBtn">
@@ -346,16 +491,20 @@
     </div>
 
 
+
     <div
         class="games-grid"
         id="gamesGrid">
 
 
-        <!-- 1 -->
+        <!-- =================================================
+             1. SNAKE
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover snake-bg">
+
                 🐍
 
                 <span class="game-tag">
@@ -364,9 +513,12 @@
 
             </div>
 
+
             <div class="game-info">
 
-                <h3>Snake</h3>
+                <h3>
+                    Snake
+                </h3>
 
                 <p>
                     Classic arcade game
@@ -374,7 +526,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/snake.html')">
+                    data-game="games/snake.html">
 
                     ▶ Play
 
@@ -385,20 +537,30 @@
         </div>
 
 
-        <!-- 2 -->
+
+        <!-- =================================================
+             2. TIC TAC TOE
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover ttt-bg">
+
                 ❌⭕
+
+
                 <span class="game-tag">
                     PUZZLE
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Tic-Tac-Toe</h3>
+                <h3>
+                    Tic-Tac-Toe
+                </h3>
 
                 <p>
                     Challenge your opponent
@@ -406,7 +568,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/tictactoe.html')">
+                    data-game="games/tictactoe.html">
 
                     ▶ Play
 
@@ -417,20 +579,30 @@
         </div>
 
 
-        <!-- 3 -->
+
+        <!-- =================================================
+             3. TETRIS
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover tetris-bg">
+
                 🧱
+
+
                 <span class="game-tag">
                     PUZZLE
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Tetris</h3>
+                <h3>
+                    Tetris
+                </h3>
 
                 <p>
                     Stack the blocks
@@ -438,7 +610,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/tetris.html')">
+                    data-game="games/tetris.html">
 
                     ▶ Play
 
@@ -449,20 +621,30 @@
         </div>
 
 
-        <!-- 4 -->
+
+        <!-- =================================================
+             4. PONG
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover pong-bg">
+
                 🏓
+
+
                 <span class="game-tag">
                     ARCADE
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Pong</h3>
+                <h3>
+                    Pong
+                </h3>
 
                 <p>
                     Classic table tennis
@@ -470,7 +652,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/pong.html')">
+                    data-game="games/pong.html">
 
                     ▶ Play
 
@@ -481,20 +663,30 @@
         </div>
 
 
-        <!-- 5 -->
+
+        <!-- =================================================
+             5. MEMORY
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover memory-bg">
+
                 🧠
+
+
                 <span class="game-tag">
                     BRAIN
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Memory Cards</h3>
+                <h3>
+                    Memory Cards
+                </h3>
 
                 <p>
                     Test your memory
@@ -502,7 +694,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/memory.html')">
+                    data-game="games/memory.html">
 
                     ▶ Play
 
@@ -513,20 +705,30 @@
         </div>
 
 
-        <!-- 6 -->
+
+        <!-- =================================================
+             6. RUNNER
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover runner-bg">
+
                 🏃
+
+
                 <span class="game-tag">
                     ACTION
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Endless Runner</h3>
+                <h3>
+                    Endless Runner
+                </h3>
 
                 <p>
                     Run as far as you can
@@ -534,7 +736,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/runner.html')">
+                    data-game="games/runner.html">
 
                     ▶ Play
 
@@ -545,52 +747,30 @@
         </div>
 
 
-        <!-- 7 -->
 
-        <div class="game-card">
-
-            <div class="game-cover game2048-bg">
-                🔢
-                <span class="game-tag">
-                    PUZZLE
-                </span>
-            </div>
-
-            <div class="game-info">
-
-                <h3>2048</h3>
-
-                <p>
-                    Reach the 2048 tile
-                </p>
-
-                <button
-                    class="play-btn"
-                    onclick="openGame('games/2048.html')">
-
-                    ▶ Play
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- 8 -->
+        <!-- =================================================
+             7. MINESWEEPER
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover mine-bg">
+
                 💣
+
+
                 <span class="game-tag">
                     BRAIN
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Minesweeper</h3>
+                <h3>
+                    Minesweeper
+                </h3>
 
                 <p>
                     Find the safe cells
@@ -598,7 +778,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/minesweeper.html')">
+                    data-game="games/minesweeper.html">
 
                     ▶ Play
 
@@ -609,20 +789,30 @@
         </div>
 
 
-        <!-- 9 -->
+
+        <!-- =================================================
+             8. FLAPPY BIRD
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover flappy-bg">
+
                 🐦
+
+
                 <span class="game-tag">
                     ARCADE
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Flappy Bird</h3>
+                <h3>
+                    Flappy Bird
+                </h3>
 
                 <p>
                     Fly through the pipes
@@ -630,7 +820,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/flappy.html')">
+                    data-game="games/flappy.html">
 
                     ▶ Play
 
@@ -641,20 +831,30 @@
         </div>
 
 
-        <!-- 10 -->
+
+        <!-- =================================================
+             9. CAR RACING
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover car-bg">
+
                 🚗
+
+
                 <span class="game-tag">
                     RACING
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Car Racing</h3>
+                <h3>
+                    Car Racing
+                </h3>
 
                 <p>
                     Dodge traffic
@@ -662,7 +862,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/car.html')">
+                    data-game="games/car.html">
 
                     ▶ Play
 
@@ -673,20 +873,30 @@
         </div>
 
 
-        <!-- 11 -->
+
+        <!-- =================================================
+             10. BIKE RACING
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover bike-bg">
+
                 🏍️
+
+
                 <span class="game-tag">
                     RACING
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Bike Racing</h3>
+                <h3>
+                    Bike Racing
+                </h3>
 
                 <p>
                     Race and collect coins
@@ -694,7 +904,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/bike.html')">
+                    data-game="games/bike.html">
 
                     ▶ Play
 
@@ -705,20 +915,30 @@
         </div>
 
 
-        <!-- 12 -->
+
+        <!-- =================================================
+             11. 3D CAR RACING
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover supercar-bg">
+
                 🏎️
+
+
                 <span class="game-tag">
                     3D
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>3D Car Racing</h3>
+                <h3>
+                    3D Car Racing
+                </h3>
 
                 <p>
                     High-speed 3D racing
@@ -726,7 +946,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/3D-CarRacing.html')">
+                    data-game="games/3D-CarRacing.html">
 
                     ▶ Play
 
@@ -737,20 +957,30 @@
         </div>
 
 
-        <!-- 13 -->
+
+        <!-- =================================================
+             12. ADVENTURE
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover adventure-bg">
+
                 🗺️
+
+
                 <span class="game-tag">
                     ADVENTURE
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Adventure</h3>
+                <h3>
+                    Adventure
+                </h3>
 
                 <p>
                     Explore a dangerous world
@@ -758,7 +988,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/adventure.html')">
+                    data-game="games/adventure.html">
 
                     ▶ Play
 
@@ -769,20 +999,30 @@
         </div>
 
 
-        <!-- 14 -->
+
+        <!-- =================================================
+             13. ALIEN INVASION
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover alien-bg">
+
                 👽
+
+
                 <span class="game-tag">
                     ACTION
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Alien Invasion</h3>
+                <h3>
+                    Alien Invasion
+                </h3>
 
                 <p>
                     Defend Earth
@@ -790,7 +1030,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/alien.html')">
+                    data-game="games/alien.html">
 
                     ▶ Play
 
@@ -801,28 +1041,38 @@
         </div>
 
 
-        <!-- 15 -->
+
+        <!-- =================================================
+             14. BREAKOUT
+        ================================================= -->
 
         <div class="game-card">
 
-            <div class="game-cover archery-bg">
-                🏹
+            <div class="game-cover breakout-bg">
+
+                🧱
+
+
                 <span class="game-tag">
-                    SKILL
+                    ARCADE
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Archery Challenge</h3>
+                <h3>
+                    Breakout
+                </h3>
 
                 <p>
-                    Test your accuracy
+                    Break the blocks and score
                 </p>
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/ArcheryChallenge.html')">
+                    data-game="games/breakout.html">
 
                     ▶ Play
 
@@ -833,20 +1083,156 @@
         </div>
 
 
-        <!-- 16 -->
+
+        <!-- =================================================
+             15. CARROM
+        ================================================= -->
+
+        <div class="game-card">
+
+            <div class="game-cover carrom-bg">
+
+                🎯
+
+
+                <span class="game-tag">
+                    SPORTS
+                </span>
+
+            </div>
+
+
+            <div class="game-info">
+
+                <h3>
+                    Carrom Board
+                </h3>
+
+                <p>
+                    Aim, strike and pocket coins
+                </p>
+
+                <button
+                    class="play-btn"
+                    data-game="games/CaromBoard.html">
+
+                    ▶ Play
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             16. CHESS
+        ================================================= -->
+
+        <div class="game-card">
+
+            <div class="game-cover chess-bg">
+
+                ♟️
+
+
+                <span class="game-tag">
+                    STRATEGY
+                </span>
+
+            </div>
+
+
+            <div class="game-info">
+
+                <h3>
+                    Chess
+                </h3>
+
+                <p>
+                    Challenge your opponent
+                </p>
+
+                <button
+                    class="play-btn"
+                    data-game="games/Chess.html">
+
+                    ▶ Play
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             17. HILL CLIMBING
+        ================================================= -->
+
+        <div class="game-card">
+
+            <div class="game-cover hill-bg">
+
+                🚙
+
+
+                <span class="game-tag">
+                    RACING
+                </span>
+
+            </div>
+
+
+            <div class="game-info">
+
+                <h3>
+                    Hill Climbing
+                </h3>
+
+                <p>
+                    Climb hills and avoid crashes
+                </p>
+
+                <button
+                    class="play-btn"
+                    data-game="games/HillClimbing.html">
+
+                    ▶ Play
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             18. LEVEL DEVIL
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover devil-bg">
+
                 😈
+
+
                 <span class="game-tag">
                     ACTION
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Level Devil</h3>
+                <h3>
+                    Level Devil
+                </h3>
 
                 <p>
                     Hidden traps everywhere
@@ -854,7 +1240,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/levelDevil.html')">
+                    data-game="games/levelDevil.html">
 
                     ▶ Play
 
@@ -865,12 +1251,17 @@
         </div>
 
 
-        <!-- 17 -->
+
+        <!-- =================================================
+             19. SPIDER-MAN
+        ================================================= -->
 
         <div class="game-card featured-card">
 
             <div class="game-cover spider-bg">
+
                 🕷️
+
 
                 <span class="game-tag">
                     FEATURED
@@ -878,9 +1269,12 @@
 
             </div>
 
+
             <div class="game-info">
 
-                <h3>Spider-Man</h3>
+                <h3>
+                    Spider-Man
+                </h3>
 
                 <p>
                     Swing between buildings
@@ -888,7 +1282,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/spiderman.html')">
+                    data-game="games/spiderman.html">
 
                     ▶ Play
 
@@ -899,52 +1293,30 @@
         </div>
 
 
-        <!-- 18 -->
 
-        <div class="game-card">
-
-            <div class="game-cover tower-bg">
-                🏰
-                <span class="game-tag">
-                    STRATEGY
-                </span>
-            </div>
-
-            <div class="game-info">
-
-                <h3>Tower Defense</h3>
-
-                <p>
-                    Defend your base
-                </p>
-
-                <button
-                    class="play-btn"
-                    onclick="openGame('games/towerDefense.html')">
-
-                    ▶ Play
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- 19 -->
+        <!-- =================================================
+             20. ZOMBIE SURVIVAL
+        ================================================= -->
 
         <div class="game-card">
 
             <div class="game-cover zombie-bg">
+
                 🧟
+
+
                 <span class="game-tag">
                     SURVIVAL
                 </span>
+
             </div>
+
 
             <div class="game-info">
 
-                <h3>Zombie Survival</h3>
+                <h3>
+                    Zombie Survival
+                </h3>
 
                 <p>
                     Survive zombie waves
@@ -952,7 +1324,7 @@
 
                 <button
                     class="play-btn"
-                    onclick="openGame('games/zombie-survival.html')">
+                    data-game="games/zombie-survival.html">
 
                     ▶ Play
 
@@ -968,6 +1340,7 @@
 </section>
 
 
+
 <!-- =====================================================
      CATEGORIES
 ===================================================== -->
@@ -975,6 +1348,7 @@
 <section
     class="categories-section"
     id="categories">
+
 
     <div class="section-heading">
 
@@ -993,35 +1367,81 @@
     </div>
 
 
+
     <div class="categories-grid">
 
-        <div class="category-card">
-            <span>🎯</span>
-            <h3>Arcade</h3>
-            <p>Classic & casual</p>
-        </div>
 
         <div class="category-card">
-            <span>🏎️</span>
-            <h3>Racing</h3>
-            <p>Speed & competition</p>
+
+            <span>
+                🎯
+            </span>
+
+            <h3>
+                Arcade
+            </h3>
+
+            <p>
+                Classic & casual
+            </p>
+
         </div>
 
-        <div class="category-card">
-            <span>⚔️</span>
-            <h3>Action</h3>
-            <p>Fight & survive</p>
-        </div>
 
         <div class="category-card">
-            <span>🧩</span>
-            <h3>Puzzle</h3>
-            <p>Think & solve</p>
+
+            <span>
+                🏎️
+            </span>
+
+            <h3>
+                Racing
+            </h3>
+
+            <p>
+                Speed & competition
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <span>
+                ⚔️
+            </span>
+
+            <h3>
+                Action
+            </h3>
+
+            <p>
+                Fight & survive
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <span>
+                🧩
+            </span>
+
+            <h3>
+                Puzzle
+            </h3>
+
+            <p>
+                Think & solve
+            </p>
+
         </div>
 
     </div>
 
 </section>
+
 
 
 <!-- =====================================================
@@ -1032,40 +1452,77 @@
     class="about-section"
     id="about">
 
+
     <div class="about-content">
 
         <span class="section-label">
             ABOUT GAMEX
         </span>
 
+
         <h2>
+
             Your browser.
-            <span>Your games.</span>
+
+            <span>
+                Your games.
+            </span>
+
             Your world.
+
         </h2>
 
+
         <p>
+
             GameX is a browser gaming platform where
             you can discover and play different games
             directly from your browser.
+
         </p>
+
 
         <div class="about-features">
 
-            <div>
-                <strong>19+</strong>
-                <span>Games</span>
-            </div>
 
             <div>
-                <strong>0</strong>
-                <span>Downloads</span>
+
+                <strong>
+                    20+
+                </strong>
+
+                <span>
+                    Games
+                </span>
+
             </div>
 
+
             <div>
-                <strong>100%</strong>
-                <span>Browser</span>
+
+                <strong>
+                    0
+                </strong>
+
+                <span>
+                    Downloads
+                </span>
+
             </div>
+
+
+            <div>
+
+                <strong>
+                    100%
+                </strong>
+
+                <span>
+                    Browser
+                </span>
+
+            </div>
+
 
         </div>
 
@@ -1077,6 +1534,7 @@
 </main>
 
 
+
 <!-- =====================================================
      FOOTER
 ===================================================== -->
@@ -1084,37 +1542,32 @@
 <footer>
 
     <div class="footer-logo">
+
         🎮 GameX
+
     </div>
 
+
     <p>
+
         Play. Enjoy. Repeat.
+
     </p>
 
+
     <span>
+
         © 2026 GameX
+
     </span>
 
 </footer>
 
 
-<!-- =====================================================
-     GAME OPEN FUNCTION
-===================================================== -->
-
-<script>
-
-function openGame(gamePath) {
-    window.location.href = gamePath;
-}
-
-</script>
-
-
-<!-- YOUR EXISTING JAVASCRIPT -->
 
 <script src="script.js"></script>
 
 
 </body>
+
 </html>
