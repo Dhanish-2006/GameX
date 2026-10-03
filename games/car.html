@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Car Racing - GameX</title>
@@ -15,112 +18,186 @@
 }
 
 body{
+
     min-height:100vh;
+
     background:
-        radial-gradient(circle at 50% 20%,#20253b,#08080f 65%);
+        radial-gradient(
+            circle at 50% 20%,
+            #20253b,
+            #08080f 65%
+        );
+
     color:white;
+
     font-family:Arial,sans-serif;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
+
     overflow:hidden;
 }
 
 .game-container{
+
     width:100%;
+
     max-width:950px;
+
     padding:12px;
+
     text-align:center;
 }
 
 h1{
+
     font-size:32px;
+
     margin-bottom:8px;
-    text-shadow:0 3px 15px rgba(139,92,246,.5);
+
+    text-shadow:
+        0 3px 15px rgba(139,92,246,.5);
 }
 
 .stats{
+
     display:flex;
+
     justify-content:center;
+
     gap:30px;
+
     margin-bottom:10px;
+
     font-size:17px;
+
     font-weight:bold;
 }
 
 .stat{
-    background:rgba(15,15,28,.8);
+
+    background:
+        rgba(15,15,28,.8);
+
     padding:7px 13px;
+
     border-radius:8px;
-    border:1px solid rgba(255,255,255,.1);
+
+    border:
+        1px solid rgba(255,255,255,.1);
 }
 
 .game-wrapper{
+
     position:relative;
+
     width:850px;
+
     max-width:100%;
+
     margin:auto;
 }
 
 canvas{
+
     display:block;
+
     width:100%;
+
     height:auto;
+
     background:#111;
-    border:3px solid #8b5cf6;
+
+    border:
+        3px solid #8b5cf6;
+
     border-radius:12px;
+
     box-shadow:
         0 0 35px rgba(139,92,246,.25),
         0 15px 40px rgba(0,0,0,.5);
 }
 
 .game-over{
+
     position:absolute;
+
     inset:0;
+
     display:none;
+
     justify-content:center;
+
     align-items:center;
+
     flex-direction:column;
-    background:rgba(0,0,0,.78);
+
+    background:
+        rgba(0,0,0,.78);
+
     border-radius:12px;
+
     backdrop-filter:blur(5px);
 }
 
 .game-over h2{
+
     font-size:42px;
+
     margin-bottom:10px;
 }
 
 .game-over p{
+
     font-size:20px;
+
     margin-bottom:20px;
 }
 
 button{
+
     border:none;
+
     padding:13px 27px;
+
     border-radius:9px;
+
     background:#8b5cf6;
+
     color:white;
+
     font-size:16px;
+
     font-weight:bold;
+
     cursor:pointer;
 }
 
 button:hover{
+
     transform:scale(1.05);
 }
 
 .controls{
+
     margin-top:10px;
+
     font-size:14px;
+
     opacity:.75;
 }
 
 .back{
+
     display:inline-block;
+
     margin-top:10px;
+
     color:#c4b5fd;
+
     text-decoration:none;
 }
 
@@ -131,54 +208,78 @@ button:hover{
     }
 
     .stats{
+
         gap:6px;
+
         font-size:12px;
     }
 
     .stat{
+
         padding:5px 7px;
     }
 
     .controls{
+
         font-size:12px;
     }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="game-container">
+
 
 <h1>🏎️ Highway Rush</h1>
 
+
 <div class="stats">
 
+
 <div class="stat">
+
 Score:
 <span id="score">0</span>
+
 </div>
 
+
 <div class="stat">
+
 Best:
 <span id="best">0</span>
+
 </div>
 
+
 <div class="stat">
+
 Speed:
 <span id="speed">1</span>
+
 </div>
+
 
 <div class="stat">
+
 ❤️
 <span id="lives">3</span>
-</div>
 
 </div>
+
+
+</div>
+
 
 <div class="game-wrapper">
+
 
 <canvas
 id="gameCanvas"
@@ -186,39 +287,59 @@ width="850"
 height="600">
 </canvas>
 
+
 <div
 class="game-over"
 id="gameOver">
 
+
 <h2>💥 GAME OVER</h2>
 
+
 <p>
+
 Score:
 <span id="finalScore">0</span>
+
 </p>
 
+
 <button onclick="restartGame()">
+
 🔄 Race Again
+
 </button>
 
-</div>
 
 </div>
+
+
+</div>
+
 
 <div class="controls">
-⬅️ ➡️ / A D — Steer &nbsp; • &nbsp;
+
+⬅️ ➡️ / A D — Steer
+&nbsp; • &nbsp;
 Avoid traffic and survive as long as possible
+
 </div>
+
 
 <a
 href="../index.html"
 class="back">
+
 ← Back to GameX
+
 </a>
+
 
 </div>
 
+
 <script>
+
 
 const canvas =
 document.getElementById("gameCanvas");
@@ -226,53 +347,56 @@ document.getElementById("gameCanvas");
 const ctx =
 canvas.getContext("2d");
 
-const WIDTH=canvas.width;
-const HEIGHT=canvas.height;
+
+const WIDTH = canvas.width;
+
+const HEIGHT = canvas.height;
 
 
 /* =====================================================
    GAME VARIABLES
 ===================================================== */
 
-let score=0;
+let score = 0;
 
-let bestScore=
+let bestScore =
 Number(
-localStorage.getItem("gamex-car-best")
-)||0;
+    localStorage.getItem("gamex-car-best")
+) || 0;
 
-let lives=3;
+let lives = 3;
 
-let gameRunning=true;
+let gameRunning = true;
 
-let roadOffset=0;
+let roadOffset = 0;
 
-let distance=0;
+let distance = 0;
 
-let difficulty=1;
+let difficulty = 1;
 
-let shake=0;
+let shake = 0;
 
-let flash=0;
+let flash = 0;
 
-let spawnTimer=0;
+let spawnTimer = 0;
 
-let particles=[];
+let particles = [];
 
-let enemyCars=[];
+let enemyCars = [];
 
-let obstacles=[];
-
-let buildings=[];
+let buildings = [];
 
 
 /* =====================================================
    CONTROLS
 ===================================================== */
 
-const keys={
+const keys = {
+
     left:false,
+
     right:false
+
 };
 
 
@@ -280,17 +404,17 @@ const keys={
    PLAYER
 ===================================================== */
 
-const player={
+const player = {
 
     width:52,
 
     height:96,
 
     x:
-    WIDTH/2-26,
+        WIDTH / 2 - 26,
 
     y:
-    HEIGHT-125,
+        HEIGHT - 125,
 
     speed:7,
 
@@ -305,13 +429,13 @@ const player={
    ROAD
 ===================================================== */
 
-const road={
+const road = {
 
-    center:WIDTH/2,
+    center:WIDTH / 2,
 
     width:470,
 
-    targetCenter:WIDTH/2,
+    targetCenter:WIDTH / 2,
 
     curve:0
 
@@ -322,14 +446,20 @@ const road={
    CAR COLORS
 ===================================================== */
 
-const carColors=[
+const carColors = [
 
     "#e63946",
+
     "#facc15",
+
     "#06b6d4",
+
     "#22c55e",
+
     "#f97316",
+
     "#ec4899",
+
     "#f8fafc"
 
 ];
@@ -341,34 +471,40 @@ const carColors=[
 
 function createBuildings(){
 
-    buildings=[];
+    buildings = [];
 
     for(let i=0;i<35;i++){
 
         buildings.push({
 
             side:
-            Math.random()<.5?-1:1,
+                Math.random() < .5
+                ? -1
+                : 1,
 
-            x:Math.random(),
+            x:
+                Math.random(),
 
             height:
-            50+
-            Math.random()*150,
+                50 +
+                Math.random() * 150,
 
             width:
-            35+
-            Math.random()*60,
+                35 +
+                Math.random() * 60,
 
             color:
-            [
-                "#202633",
-                "#272d3a",
-                "#303746",
-                "#1c2430"
-            ][
-                Math.floor(Math.random()*4)
-            ]
+
+                [
+                    "#202633",
+                    "#272d3a",
+                    "#303746",
+                    "#1c2430"
+                ][
+                    Math.floor(
+                        Math.random() * 4
+                    )
+                ]
 
         });
 
@@ -385,27 +521,28 @@ createBuildings();
 
 function createEnemy(){
 
-    const laneWidth=
-    road.width/4;
+    const laneWidth =
+        road.width / 4;
 
-    const lane=
-    Math.floor(
-        Math.random()*4
-    );
+    const lane =
+        Math.floor(
+            Math.random() * 4
+        );
 
-    const width=
-    45+
-    Math.random()*12;
+    const width =
+        45 +
+        Math.random() * 12;
 
-    const height=
-    80+
-    Math.random()*25;
+    const height =
+        80 +
+        Math.random() * 25;
 
-    const laneX=
-    road.center-road.width/2+
-    lane*laneWidth+
-    laneWidth/2-
-    width/2;
+    const laneX =
+        road.center -
+        road.width / 2 +
+        lane * laneWidth +
+        laneWidth / 2 -
+        width / 2;
 
     enemyCars.push({
 
@@ -418,66 +555,28 @@ function createEnemy(){
         height:height,
 
         speed:
-        2.5+
-        Math.random()*2.8+
-        difficulty*.18,
+            1.5 +
+            Math.random() * 1.8 +
+            difficulty * .10,
 
         color:
-        carColors[
-            Math.floor(
-                Math.random()*carColors.length
-            )
-        ],
+            carColors[
+                Math.floor(
+                    Math.random() *
+                    carColors.length
+                )
+            ],
 
         type:
-        Math.random()<.2
-        ?"truck"
-        :"car",
+            Math.random() < .2
+            ? "truck"
+            : "car",
 
         changeTimer:
-        60+
-        Math.random()*120,
+            60 +
+            Math.random() * 120,
 
         targetX:laneX
-
-    });
-
-}
-
-
-/* =====================================================
-   OBSTACLE
-===================================================== */
-
-function createObstacle(){
-
-    const laneWidth=
-    road.width/4;
-
-    const lane=
-    Math.floor(
-        Math.random()*4
-    );
-
-    obstacles.push({
-
-        x:
-        road.center-
-        road.width/2+
-        lane*laneWidth+
-        laneWidth/2-
-        18,
-
-        y:-50,
-
-        width:36,
-
-        height:36,
-
-        type:
-        Math.random()<.5
-        ?"cone"
-        :"barrier"
 
     });
 
@@ -499,23 +598,23 @@ function explosion(x,y){
             y:y,
 
             vx:
-            (Math.random()-.5)*9,
+                (Math.random()-.5)*9,
 
             vy:
-            (Math.random()-.5)*9,
+                (Math.random()-.5)*9,
 
             life:
-            30+
-            Math.random()*25,
+                30 +
+                Math.random()*25,
 
             size:
-            2+
-            Math.random()*5,
+                2 +
+                Math.random()*5,
 
             color:
-            Math.random()<.5
-            ?"orange"
-            :"#ffd166"
+                Math.random() < .5
+                ? "orange"
+                : "#ffd166"
 
         });
 
@@ -530,9 +629,10 @@ function explosion(x,y){
 
 function drawRoad(){
 
+
     /* GRASS */
 
-    ctx.fillStyle="#183d27";
+    ctx.fillStyle = "#183d27";
 
     ctx.fillRect(
         0,
@@ -546,15 +646,16 @@ function drawRoad(){
 
     for(let i=0;i<14;i++){
 
-        const y=
-        (i*55+
-        roadOffset*.35)
-        %HEIGHT;
+        const y =
+            (
+                i * 55 +
+                roadOffset * .35
+            ) % HEIGHT;
 
-        ctx.fillStyle=
-        i%2
-        ?"rgba(255,255,255,.025)"
-        :"rgba(0,0,0,.08)";
+        ctx.fillStyle =
+            i % 2
+            ? "rgba(255,255,255,.025)"
+            : "rgba(0,0,0,.08)";
 
         ctx.fillRect(
             0,
@@ -568,30 +669,46 @@ function drawRoad(){
 
     /* ROAD */
 
-    ctx.fillStyle="#303238";
+    ctx.fillStyle = "#303238";
 
     ctx.beginPath();
 
     ctx.moveTo(
-        road.center-road.width/2,
+
+        road.center -
+        road.width / 2,
+
         0
+
     );
 
     ctx.lineTo(
-        road.center-road.width/2+
+
+        road.center -
+        road.width / 2 +
         road.curve,
+
         HEIGHT
+
     );
 
     ctx.lineTo(
-        road.center+road.width/2+
+
+        road.center +
+        road.width / 2 +
         road.curve,
+
         HEIGHT
+
     );
 
     ctx.lineTo(
-        road.center+road.width/2,
+
+        road.center +
+        road.width / 2,
+
         0
+
     );
 
     ctx.closePath();
@@ -601,62 +718,88 @@ function drawRoad(){
 
     /* ROAD SHADOW */
 
-    ctx.fillStyle="rgba(0,0,0,.18)";
+    ctx.fillStyle =
+        "rgba(0,0,0,.18)";
 
     ctx.fillRect(
-        road.center-road.width/2,
+
+        road.center -
+        road.width / 2,
+
         0,
+
         10,
+
         HEIGHT
+
     );
 
 
     /* ROAD EDGES */
 
-    ctx.fillStyle="#f4f4f4";
+    ctx.fillStyle = "#f4f4f4";
 
     ctx.fillRect(
-        road.center-road.width/2,
+
+        road.center -
+        road.width / 2,
+
         0,
+
         7,
+
         HEIGHT
+
     );
 
     ctx.fillRect(
-        road.center+road.width/2-7,
-        0,
+
+        road.center +
+        road.width / 2 -
         7,
+
+        0,
+
+        7,
+
         HEIGHT
+
     );
 
 
     /* LANE MARKINGS */
 
-    const laneWidth=
-    road.width/4;
+    const laneWidth =
+        road.width / 4;
 
-    ctx.fillStyle=
-    "rgba(255,255,255,.9)";
+    ctx.fillStyle =
+        "rgba(255,255,255,.9)";
+
 
     for(let lane=1;lane<4;lane++){
 
-        const x=
-        road.center-
-        road.width/2+
-        lane*laneWidth+
-        road.curve*.5;
+        const x =
+            road.center -
+            road.width / 2 +
+            lane * laneWidth +
+            road.curve * .5;
 
         for(
-            let y=-90+roadOffset;
-            y<HEIGHT;
-            y+=115
+            let y = -90 + roadOffset;
+            y < HEIGHT;
+            y += 115
         ){
 
             ctx.fillRect(
-                x-3,
+
+                x - 3,
+
                 y,
+
                 6,
+
                 65
+
             );
 
         }
@@ -674,64 +817,113 @@ function drawCity(){
 
     for(let i=0;i<buildings.length;i++){
 
-        const b=buildings[i];
+        const b =
+            buildings[i];
 
-        const sideX=
-        b.side<0
-        ?road.center-road.width/2-25-
-        b.width-
-        b.x*80
-        :road.center+road.width/2+25+
-        b.x*80;
+        const sideX =
 
-        const y=
-        HEIGHT-
-        (
-            (i*170+
-            roadOffset*.45)
-            %
-            (HEIGHT+250)
-        );
+            b.side < 0
 
-        ctx.fillStyle=b.color;
+            ?
+
+            road.center -
+            road.width / 2 -
+            25 -
+            b.width -
+            b.x * 80
+
+            :
+
+            road.center +
+            road.width / 2 +
+            25 +
+            b.x * 80;
+
+
+        const y =
+
+            HEIGHT -
+
+            (
+
+                (
+                    i * 170 +
+                    roadOffset * .45
+                )
+
+                %
+
+                (HEIGHT + 250)
+
+            );
+
+
+        ctx.fillStyle =
+            b.color;
+
 
         ctx.fillRect(
+
             sideX,
-            y-b.height,
+
+            y - b.height,
+
             b.width,
+
             b.height
+
         );
 
 
         /* WINDOWS */
 
-        ctx.fillStyle=
-        "rgba(255,220,100,.45)";
+        ctx.fillStyle =
+            "rgba(255,220,100,.45)";
+
 
         for(
-            let wy=y-b.height+12;
-            wy<y-10;
-            wy+=18
+
+            let wy =
+                y - b.height + 12;
+
+            wy < y - 10;
+
+            wy += 18
+
         ){
 
             for(
-                let wx=sideX+7;
-                wx<sideX+b.width-5;
-                wx+=15
+
+                let wx =
+                    sideX + 7;
+
+                wx <
+                    sideX + b.width - 5;
+
+                wx += 15
+
             ){
 
                 if(
-                    (i+
-                    Math.floor(wy)+
-                    Math.floor(wx))
-                    %3!==0
+
+                    (
+                        i +
+                        Math.floor(wy) +
+                        Math.floor(wx)
+                    ) % 3 !== 0
+
                 ){
 
                     ctx.fillRect(
+
                         wx,
+
                         wy,
+
                         7,
+
                         8
+
                     );
 
                 }
@@ -753,35 +945,51 @@ function drawCar(car,color){
 
     ctx.save();
 
+
     ctx.translate(
-        car.x+
-        car.width/2,
-        car.y+
-        car.height/2
+
+        car.x +
+        car.width / 2,
+
+        car.y +
+        car.height / 2
+
     );
+
 
     ctx.rotate(
-        car.tilt||0
+        car.tilt || 0
     );
 
-    const w=car.width;
-    const h=car.height;
+
+    const w = car.width;
+
+    const h = car.height;
+
 
     /* SHADOW */
 
-    ctx.fillStyle=
-    "rgba(0,0,0,.35)";
+    ctx.fillStyle =
+        "rgba(0,0,0,.35)";
 
     ctx.beginPath();
 
     ctx.ellipse(
+
         0,
-        h*.48,
-        w*.62,
+
+        h * .48,
+
+        w * .62,
+
         7,
+
         0,
+
         0,
-        Math.PI*2
+
+        Math.PI * 2
+
     );
 
     ctx.fill();
@@ -789,16 +997,22 @@ function drawCar(car,color){
 
     /* BODY */
 
-    ctx.fillStyle=color;
+    ctx.fillStyle = color;
 
     ctx.beginPath();
 
     ctx.roundRect(
-        -w/2,
-        -h/2,
+
+        -w / 2,
+
+        -h / 2,
+
         w,
+
         h,
+
         10
+
     );
 
     ctx.fill();
@@ -806,46 +1020,70 @@ function drawCar(car,color){
 
     /* BODY HIGHLIGHT */
 
-    const grad=
-    ctx.createLinearGradient(
-        -w/2,
-        0,
-        w/2,
-        0
-    );
+    const grad =
+        ctx.createLinearGradient(
+
+            -w / 2,
+
+            0,
+
+            w / 2,
+
+            0
+
+        );
+
 
     grad.addColorStop(
+
         0,
+
         "rgba(0,0,0,.25)"
+
     );
 
+
     grad.addColorStop(
+
         .5,
+
         "rgba(255,255,255,.15)"
+
     );
+
 
     grad.addColorStop(
+
         1,
+
         "rgba(0,0,0,.3)"
+
     );
 
-    ctx.fillStyle=grad;
+
+    ctx.fillStyle = grad;
 
     ctx.fill();
 
 
     /* FRONT WINDOW */
 
-    ctx.fillStyle="#101722";
+    ctx.fillStyle = "#101722";
 
     ctx.beginPath();
 
     ctx.roundRect(
-        -w*.34,
-        -h*.31,
-        w*.68,
-        h*.23,
+
+        -w * .34,
+
+        -h * .31,
+
+        w * .68,
+
+        h * .23,
+
         5
+
     );
 
     ctx.fill();
@@ -853,194 +1091,179 @@ function drawCar(car,color){
 
     /* WINDOW REFLECTION */
 
-    ctx.fillStyle=
-    "rgba(150,220,255,.18)";
+    ctx.fillStyle =
+        "rgba(150,220,255,.18)";
 
     ctx.fillRect(
-        -w*.25,
-        -h*.29,
-        w*.18,
-        h*.18
+
+        -w * .25,
+
+        -h * .29,
+
+        w * .18,
+
+        h * .18
+
     );
 
 
     /* REAR WINDOW */
 
-    ctx.fillStyle="#111827";
+    ctx.fillStyle = "#111827";
 
     ctx.fillRect(
-        -w*.32,
-        h*.02,
-        w*.64,
-        h*.20
+
+        -w * .32,
+
+        h * .02,
+
+        w * .64,
+
+        h * .20
+
     );
 
 
     /* CENTER LINE */
 
-    ctx.fillStyle=
-    "rgba(255,255,255,.15)";
+    ctx.fillStyle =
+        "rgba(255,255,255,.15)";
 
     ctx.fillRect(
+
         -2,
-        -h*.45,
+
+        -h * .45,
+
         4,
-        h*.9
+
+        h * .9
+
     );
 
 
     /* WHEELS */
 
-    ctx.fillStyle="#050505";
+    ctx.fillStyle = "#050505";
 
-    const wheelW=7;
-    const wheelH=25;
+    const wheelW = 7;
+
+    const wheelH = 25;
+
 
     ctx.fillRect(
-        -w/2-4,
-        -h*.28,
+
+        -w / 2 - 4,
+
+        -h * .28,
+
         wheelW,
+
         wheelH
+
     );
 
-    ctx.fillRect(
-        w/2-3,
-        -h*.28,
-        wheelW,
-        wheelH
-    );
 
     ctx.fillRect(
-        -w/2-4,
-        h*.15,
+
+        w / 2 - 3,
+
+        -h * .28,
+
         wheelW,
+
         wheelH
+
     );
 
+
     ctx.fillRect(
-        w/2-3,
-        h*.15,
+
+        -w / 2 - 4,
+
+        h * .15,
+
         wheelW,
+
         wheelH
+
+    );
+
+
+    ctx.fillRect(
+
+        w / 2 - 3,
+
+        h * .15,
+
+        wheelW,
+
+        wheelH
+
     );
 
 
     /* HEADLIGHTS */
 
-    ctx.fillStyle="#fff7c2";
+    ctx.fillStyle = "#fff7c2";
+
 
     ctx.fillRect(
-        -w*.32,
-        -h*.45,
+
+        -w * .32,
+
+        -h * .45,
+
         10,
+
         6
+
     );
 
+
     ctx.fillRect(
-        w*.32-10,
-        -h*.45,
+
+        w * .32 - 10,
+
+        -h * .45,
+
         10,
+
         6
+
     );
 
 
     /* TAIL LIGHTS */
 
-    ctx.fillStyle="#ff2020";
+    ctx.fillStyle = "#ff2020";
+
 
     ctx.fillRect(
-        -w*.34,
-        h*.38,
+
+        -w * .34,
+
+        h * .38,
+
         11,
+
         6
+
     );
+
 
     ctx.fillRect(
-        w*.34-11,
-        h*.38,
+
+        w * .34 - 11,
+
+        h * .38,
+
         11,
+
         6
+
     );
 
-    ctx.restore();
-
-}
-
-
-/* =====================================================
-   OBSTACLES
-===================================================== */
-
-function drawObstacle(o){
-
-    ctx.save();
-
-    ctx.translate(
-        o.x+
-        o.width/2,
-        o.y+
-        o.height/2
-    );
-
-    if(o.type==="cone"){
-
-        ctx.fillStyle="#f97316";
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            -20
-        );
-
-        ctx.lineTo(
-            -18,
-            18
-        );
-
-        ctx.lineTo(
-            18,
-            18
-        );
-
-        ctx.closePath();
-
-        ctx.fill();
-
-        ctx.fillStyle="white";
-
-        ctx.fillRect(
-            -11,
-            0,
-            22,
-            5
-        );
-
-    }else{
-
-        ctx.fillStyle="#facc15";
-
-        ctx.fillRect(
-            -18,
-            -15,
-            36,
-            30
-        );
-
-        ctx.fillStyle="#222";
-
-        for(let i=-15;i<20;i+=15){
-
-            ctx.fillRect(
-                i,
-                -15,
-                7,
-                30
-            );
-
-        }
-
-    }
 
     ctx.restore();
 
@@ -1053,27 +1276,27 @@ function drawObstacle(o){
 
 function collision(a,b){
 
-    const pad=7;
+    const pad = 7;
 
     return(
 
-        a.x+pad<
-        b.x+b.width-pad
+        a.x + pad <
+        b.x + b.width - pad
 
         &&
 
-        a.x+a.width-pad>
-        b.x+pad
+        a.x + a.width - pad >
+        b.x + pad
 
         &&
 
-        a.y+pad<
-        b.y+b.height-pad
+        a.y + pad <
+        b.y + b.height - pad
 
         &&
 
-        a.y+a.height-pad>
-        b.y+pad
+        a.y + a.height - pad >
+        b.y + pad
 
     );
 
@@ -1086,25 +1309,31 @@ function collision(a,b){
 
 function crash(){
 
-    if(player.invincible>0)
+    if(player.invincible > 0)
         return;
+
 
     lives--;
 
-    player.invincible=100;
+    player.invincible = 100;
 
-    shake=18;
+    shake = 18;
 
-    flash=1;
+    flash = 1;
+
 
     explosion(
-        player.x+
-        player.width/2,
-        player.y+
-        player.height/2
+
+        player.x +
+        player.width / 2,
+
+        player.y +
+        player.height / 2
+
     );
 
-    if(lives<=0){
+
+    if(lives <= 0){
 
         endGame();
 
@@ -1125,96 +1354,114 @@ function update(){
 
     /* DIFFICULTY */
 
-    difficulty=
-    1+
-    Math.floor(score/100);
+    difficulty =
+        1 +
+        Math.floor(score / 100);
 
 
     /* PLAYER */
 
     if(keys.left){
 
-        player.x-=
-        player.speed;
+        player.x -=
+            player.speed;
 
-        player.tilt=
-        Math.max(
-            player.tilt-.025,
-            -.12
-        );
+        player.tilt =
+            Math.max(
 
-    }else if(keys.right){
+                player.tilt - .025,
 
-        player.x+=
-        player.speed;
+                -.12
 
-        player.tilt=
-        Math.min(
-            player.tilt+.025,
-            .12
-        );
+            );
 
-    }else{
+    }
 
-        player.tilt*=.85;
+    else if(keys.right){
+
+        player.x +=
+            player.speed;
+
+        player.tilt =
+            Math.min(
+
+                player.tilt + .025,
+
+                .12
+
+            );
+
+    }
+
+    else{
+
+        player.tilt *= .85;
 
     }
 
 
     /* ROAD BOUNDARIES */
 
-    const left=
-    road.center-
-    road.width/2+
-    12;
-
-    const right=
-    road.center+
-    road.width/2-
-    player.width-
-    12;
+    const left =
+        road.center -
+        road.width / 2 +
+        12;
 
 
-    if(player.x<left)
-        player.x=left;
+    const right =
+        road.center +
+        road.width / 2 -
+        player.width -
+        12;
 
-    if(player.x>right)
-        player.x=right;
+
+    if(player.x < left)
+        player.x = left;
+
+
+    if(player.x > right)
+        player.x = right;
 
 
     /* ROAD MOTION */
 
-    const roadSpeed=
-    4+
-    difficulty*.55;
-
-    roadOffset+=roadSpeed;
-
-    if(roadOffset>115)
-        roadOffset=0;
+    const roadSpeed =
+        2.5 +
+        difficulty * .30;
 
 
-    /* SLIGHT ROAD CURVE */
-
-    road.targetCenter=
-    WIDTH/2+
-    Math.sin(
-        distance*.002
-    )*55;
-
-    road.center+=
-    (
-        road.targetCenter-
-        road.center
-    )*.004;
+    roadOffset += roadSpeed;
 
 
-    distance+=roadSpeed;
+    if(roadOffset > 115)
+        roadOffset = 0;
+
+
+    /* ROAD CURVE */
+
+    road.targetCenter =
+
+        WIDTH / 2 +
+
+        Math.sin(
+            distance * .002
+        ) * 55;
+
+
+    road.center +=
+
+        (
+            road.targetCenter -
+            road.center
+        ) * .004;
+
+
+    distance += roadSpeed;
 
 
     /* PLAYER INVINCIBILITY */
 
-    if(player.invincible>0)
+    if(player.invincible > 0)
         player.invincible--;
 
 
@@ -1222,104 +1469,111 @@ function update(){
 
     for(const car of enemyCars){
 
-        car.y+=
-        car.speed+
-        difficulty*.12;
+        car.y +=
+
+            car.speed +
+            difficulty * .06;
 
 
         /* AI TRACKING */
 
-        const vertical=
-        player.y-car.y;
+        const vertical =
+            player.y - car.y;
 
 
         if(
-            vertical>0 &&
-            vertical<230
+
+            vertical > 0 &&
+
+            vertical < 230
+
         ){
 
             if(
-                player.x<
-                car.x-18
+
+                player.x <
+                car.x - 18
+
             ){
 
-                car.targetX=
-                car.x-1.1;
+                car.targetX =
+                    car.x - 1.1;
 
             }
 
+
             if(
-                player.x>
-                car.x+18
+
+                player.x >
+                car.x + 18
+
             ){
 
-                car.targetX=
-                car.x+1.1;
+                car.targetX =
+                    car.x + 1.1;
 
             }
 
         }
 
 
-        car.x+=
-        (car.targetX-car.x)*.025;
+        car.x +=
+
+            (
+                car.targetX -
+                car.x
+            ) * .025;
 
 
         /* KEEP ON ROAD */
 
-        const minX=
-        road.center-
-        road.width/2+
-        10;
+        const minX =
 
-        const maxX=
-        road.center+
-        road.width/2-
-        car.width-
-        10;
+            road.center -
+            road.width / 2 +
+            10;
 
 
-        car.x=
-        Math.max(
-            minX,
-            Math.min(
-                maxX,
-                car.x
-            )
-        );
+        const maxX =
 
+            road.center +
+            road.width / 2 -
+            car.width -
+            10;
+
+
+        car.x =
+
+            Math.max(
+
+                minX,
+
+                Math.min(
+
+                    maxX,
+
+                    car.x
+
+                )
+
+            );
+
+
+        /* CAR COLLISION */
 
         if(
+
             collision(
+
                 player,
+
                 car
+
             )
+
         ){
 
             crash();
-
-        }
-
-    }
-
-
-    /* OBSTACLES */
-
-    for(const o of obstacles){
-
-        o.y+=
-        roadSpeed*1.05;
-
-        if(
-            collision(
-                player,
-                o
-            )
-        ){
-
-            crash();
-
-            o.y=HEIGHT+100;
 
         }
 
@@ -1328,62 +1582,51 @@ function update(){
 
     /* REMOVE CARS */
 
-    enemyCars=
-    enemyCars.filter(car=>{
+    enemyCars =
+        enemyCars.filter(car => {
 
-        if(car.y>HEIGHT+150){
+            if(
+                car.y >
+                HEIGHT + 150
+            ){
 
-            score+=10;
+                score += 10;
 
-            return false;
+                return false;
 
-        }
+            }
 
-        return true;
+            return true;
 
-    });
-
-
-    /* REMOVE OBSTACLES */
-
-    obstacles=
-    obstacles.filter(
-        o=>o.y<HEIGHT+100
-    );
+        });
 
 
     /* SPAWN TRAFFIC */
 
     spawnTimer--;
 
-    const spawnRate=
-    Math.max(
-        30,
-        80-
-        difficulty*4
-    );
+
+    const spawnRate =
+
+        Math.max(
+
+            45,
+
+            105 -
+            difficulty * 3
+
+        );
 
 
-    if(spawnTimer<=0){
+    if(spawnTimer <= 0){
 
         createEnemy();
 
-        spawnTimer=
-        spawnRate+
-        Math.random()*30;
 
-    }
+        spawnTimer =
 
-
-    /* OBSTACLE SPAWN */
-
-    if(
-        difficulty>=3 &&
-        Math.random()<
-        .0025*difficulty
-    ){
-
-        createObstacle();
+            spawnRate +
+            Math.random() * 30;
 
     }
 
@@ -1391,13 +1634,14 @@ function update(){
     /* SCORE */
 
     if(
-        Math.floor(distance)%12===0
+        Math.floor(distance) % 12 === 0
     ){
 
-        score=
-        Math.floor(
-            distance/12
-        );
+        score =
+
+            Math.floor(
+                distance / 12
+            );
 
     }
 
@@ -1406,50 +1650,61 @@ function update(){
 
     document.getElementById(
         "score"
-    ).textContent=score;
+    ).textContent = score;
+
 
     document.getElementById(
         "speed"
-    ).textContent=
-    Math.min(
-        20,
-        Math.floor(
-            1+
-            difficulty*.7
-        )
-    );
+    ).textContent =
+
+        Math.min(
+
+            12,
+
+            Math.floor(
+
+                1 +
+                difficulty * .4
+
+            )
+
+        );
+
 
     document.getElementById(
         "lives"
-    ).textContent=
-    lives;
+    ).textContent = lives;
 
 
     /* PARTICLES */
 
     for(const p of particles){
 
-        p.x+=p.vx;
-        p.y+=p.vy;
+        p.x += p.vx;
 
-        p.vx*=.98;
-        p.vy*=.98;
+        p.y += p.vy;
+
+        p.vx *= .98;
+
+        p.vy *= .98;
 
         p.life--;
 
     }
 
-    particles=
-    particles.filter(
-        p=>p.life>0
-    );
+
+    particles =
+        particles.filter(
+            p => p.life > 0
+        );
 
 
-    if(shake>0)
-        shake*=.88;
+    if(shake > 0)
+        shake *= .88;
 
-    if(flash>0)
-        flash*=.82;
+
+    if(flash > 0)
+        flash *= .82;
 
 }
 
@@ -1462,79 +1717,130 @@ function drawParticles(){
 
     for(const p of particles){
 
-        ctx.globalAlpha=
-        Math.min(
-            1,
-            p.life/30
-        );
+        ctx.globalAlpha =
 
-        ctx.fillStyle=p.color;
+            Math.min(
+
+                1,
+
+                p.life / 30
+
+            );
+
+
+        ctx.fillStyle =
+            p.color;
+
 
         ctx.beginPath();
 
+
         ctx.arc(
+
             p.x,
+
             p.y,
+
             p.size,
+
             0,
-            Math.PI*2
+
+            Math.PI * 2
+
         );
+
 
         ctx.fill();
 
     }
 
-    ctx.globalAlpha=1;
+
+    ctx.globalAlpha = 1;
 
 }
 
 
 /* =====================================================
-   HUD EFFECT
+   LIGHTING
 ===================================================== */
 
 function drawLighting(){
 
-    const gradient=
-    ctx.createRadialGradient(
-        WIDTH/2,
-        HEIGHT*.75,
-        50,
-        WIDTH/2,
-        HEIGHT*.7,
-        500
-    );
+    const gradient =
+
+        ctx.createRadialGradient(
+
+            WIDTH / 2,
+
+            HEIGHT * .75,
+
+            50,
+
+            WIDTH / 2,
+
+            HEIGHT * .7,
+
+            500
+
+        );
+
 
     gradient.addColorStop(
+
         0,
+
         "rgba(255,255,220,.05)"
+
     );
+
 
     gradient.addColorStop(
+
         1,
+
         "rgba(0,0,0,.35)"
+
     );
 
-    ctx.fillStyle=gradient;
+
+    ctx.fillStyle = gradient;
+
 
     ctx.fillRect(
+
         0,
+
         0,
+
         WIDTH,
+
         HEIGHT
+
     );
 
 
-    if(flash>.05){
+    if(flash > .05){
 
-        ctx.fillStyle=
-        `rgba(255,255,255,${flash*.25})`;
+        ctx.fillStyle =
+
+            `rgba(
+                255,
+                255,
+                255,
+                ${flash * .25}
+            )`;
+
 
         ctx.fillRect(
+
             0,
+
             0,
+
             WIDTH,
+
             HEIGHT
+
         );
 
     }
@@ -1553,25 +1859,36 @@ function draw(){
 
     /* SCREEN SHAKE */
 
-    if(shake>1){
+    if(shake > 1){
 
         ctx.translate(
-            (Math.random()-.5)*shake,
-            (Math.random()-.5)*shake
+
+            (Math.random() - .5) *
+            shake,
+
+            (Math.random() - .5) *
+            shake
+
         );
 
     }
 
 
     ctx.clearRect(
+
         -30,
+
         -30,
-        WIDTH+60,
-        HEIGHT+60
+
+        WIDTH + 60,
+
+        HEIGHT + 60
+
     );
 
 
     drawCity();
+
 
     drawRoad();
 
@@ -1579,76 +1896,98 @@ function draw(){
     /* ROAD SIDE POSTS */
 
     for(
-        let y=-40+roadOffset;
-        y<HEIGHT;
-        y+=100
+
+        let y = -40 + roadOffset;
+
+        y < HEIGHT;
+
+        y += 100
+
     ){
 
-        ctx.fillStyle="#eee";
+        ctx.fillStyle = "#eee";
+
 
         ctx.fillRect(
-            road.center-
-            road.width/2-
+
+            road.center -
+            road.width / 2 -
             17,
+
             y,
+
             5,
+
             28
+
         );
 
+
         ctx.fillRect(
-            road.center+
-            road.width/2+
+
+            road.center +
+            road.width / 2 +
             12,
+
             y,
+
             5,
+
             28
+
         );
 
     }
 
 
-    /* OBSTACLES */
+    /* ENEMY CARS */
 
-    obstacles.forEach(
-        drawObstacle
-    );
+    enemyCars.forEach(car => {
 
+        if(
 
-    /* ENEMIES */
+            player.invincible > 0 &&
 
-    enemyCars.forEach(
-        car=>{
+            Math.floor(
+                player.invincible / 6
+            ) % 2 === 0
 
-            if(
-                player.invincible>0 &&
-                Math.floor(
-                    player.invincible/6
-                )%2===0
-            ){
-                return;
-            }
+        ){
 
-            drawCar(
-                car,
-                car.color
-            );
+            return;
 
         }
-    );
+
+
+        drawCar(
+
+            car,
+
+            car.color
+
+        );
+
+    });
 
 
     /* PLAYER */
 
     if(
-        player.invincible<=0 ||
+
+        player.invincible <= 0 ||
+
         Math.floor(
-            player.invincible/6
-        )%2===0
+            player.invincible / 6
+        ) % 2 === 0
+
     ){
 
         drawCar(
+
             player,
+
             "#8b5cf6"
+
         );
 
     }
@@ -1656,7 +1995,9 @@ function draw(){
 
     drawParticles();
 
+
     drawLighting();
+
 
     ctx.restore();
 
@@ -1685,59 +2026,79 @@ function gameLoop(){
 ===================================================== */
 
 document.addEventListener(
-"keydown",
-e=>{
 
-    if(
-        e.key==="ArrowLeft" ||
-        e.key.toLowerCase()==="a"
-    ){
+    "keydown",
 
-        keys.left=true;
+    e => {
 
-        e.preventDefault();
+        if(
+
+            e.key === "ArrowLeft" ||
+
+            e.key.toLowerCase() === "a"
+
+        ){
+
+            keys.left = true;
+
+            e.preventDefault();
+
+        }
+
+
+        if(
+
+            e.key === "ArrowRight" ||
+
+            e.key.toLowerCase() === "d"
+
+        ){
+
+            keys.right = true;
+
+            e.preventDefault();
+
+        }
 
     }
 
-
-    if(
-        e.key==="ArrowRight" ||
-        e.key.toLowerCase()==="d"
-    ){
-
-        keys.right=true;
-
-        e.preventDefault();
-
-    }
-
-});
+);
 
 
 document.addEventListener(
-"keyup",
-e=>{
 
-    if(
-        e.key==="ArrowLeft" ||
-        e.key.toLowerCase()==="a"
-    ){
+    "keyup",
 
-        keys.left=false;
+    e => {
+
+        if(
+
+            e.key === "ArrowLeft" ||
+
+            e.key.toLowerCase() === "a"
+
+        ){
+
+            keys.left = false;
+
+        }
+
+
+        if(
+
+            e.key === "ArrowRight" ||
+
+            e.key.toLowerCase() === "d"
+
+        ){
+
+            keys.right = false;
+
+        }
 
     }
 
-
-    if(
-        e.key==="ArrowRight" ||
-        e.key.toLowerCase()==="d"
-    ){
-
-        keys.right=false;
-
-    }
-
-});
+);
 
 
 /* =====================================================
@@ -1746,30 +2107,38 @@ e=>{
 
 function endGame(){
 
-    gameRunning=false;
+    gameRunning = false;
 
-    if(score>bestScore){
 
-        bestScore=score;
+    if(score > bestScore){
+
+        bestScore = score;
+
 
         localStorage.setItem(
+
             "gamex-car-best",
+
             bestScore
+
         );
 
     }
 
+
     document.getElementById(
         "best"
-    ).textContent=bestScore;
+    ).textContent = bestScore;
+
 
     document.getElementById(
         "finalScore"
-    ).textContent=score;
+    ).textContent = score;
+
 
     document.getElementById(
         "gameOver"
-    ).style.display="flex";
+    ).style.display = "flex";
 
 }
 
@@ -1780,57 +2149,62 @@ function endGame(){
 
 function restartGame(){
 
-    score=0;
+    score = 0;
 
-    distance=0;
+    distance = 0;
 
-    difficulty=1;
+    difficulty = 1;
 
-    lives=3;
+    lives = 3;
 
-    roadOffset=0;
+    roadOffset = 0;
 
-    road.center=WIDTH/2;
+    road.center = WIDTH / 2;
 
-    road.targetCenter=WIDTH/2;
+    road.targetCenter = WIDTH / 2;
 
-    enemyCars=[];
+    enemyCars = [];
 
-    obstacles=[];
+    particles = [];
 
-    particles=[];
+    spawnTimer = 0;
 
-    spawnTimer=0;
+    shake = 0;
 
-    shake=0;
+    flash = 0;
 
-    flash=0;
 
-    player.x=
-    WIDTH/2-
-    player.width/2;
+    player.x =
 
-    player.tilt=0;
+        WIDTH / 2 -
+        player.width / 2;
 
-    player.invincible=0;
 
-    gameRunning=true;
+    player.tilt = 0;
+
+    player.invincible = 0;
+
+    gameRunning = true;
+
 
     document.getElementById(
         "score"
-    ).textContent="0";
+    ).textContent = "0";
+
 
     document.getElementById(
         "speed"
-    ).textContent="1";
+    ).textContent = "1";
+
 
     document.getElementById(
         "lives"
-    ).textContent="3";
+    ).textContent = "3";
+
 
     document.getElementById(
         "gameOver"
-    ).style.display="none";
+    ).style.display = "none";
 
 }
 
@@ -1840,12 +2214,15 @@ function restartGame(){
 ===================================================== */
 
 document.getElementById(
-"best"
-).textContent=bestScore;
+    "best"
+).textContent = bestScore;
+
 
 gameLoop();
 
 </script>
 
+
 </body>
+
 </html>
