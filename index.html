@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameX - Play Free Games</title>
 
-    <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,10 +15,6 @@
 
 <body>
 
-<!-- =====================================================
-     TOP NAVIGATION
-===================================================== -->
-
 <header class="header" id="header">
 
     <div class="logo">
@@ -28,42 +23,30 @@
     </div>
 
     <nav class="navbar" id="navbar">
-
         <a href="#" class="active">Home</a>
         <a href="#games">Discover</a>
         <a href="#categories">Categories</a>
         <a href="#about">About</a>
-
     </nav>
 
     <div class="header-actions">
-
         <button class="header-btn" id="searchBtn" title="Search">🔍</button>
         <button class="header-btn" id="themeBtn" title="Theme">🌙</button>
         <button class="menu-btn" id="menuBtn">☰</button>
-
     </div>
 
 </header>
 
-<!-- =====================================================
-     SEARCH
-===================================================== -->
 
 <section class="search-section" id="searchSection">
-
     <div class="search-box">
         <span>🔍</span>
         <input type="text" id="searchInput" placeholder="Search for games...">
     </div>
-
 </section>
 
-<main>
 
-<!-- =====================================================
-     FEATURED HERO
-===================================================== -->
+<main>
 
 <section class="featured" id="featured">
 
@@ -84,12 +67,12 @@
         </p>
 
         <div class="featured-buttons">
-            <button class="featured-play magnetic" onclick="openGame('games/spiderman.html')">▶ PLAY NOW</button>
-            <button class="featured-explore magnetic" id="exploreBtn">EXPLORE GAMES →</button>
+            <button class="featured-play" onclick="openGame('games/spiderman.html')">▶ PLAY NOW</button>
+            <button class="featured-explore" id="exploreBtn">EXPLORE GAMES →</button>
         </div>
 
         <div class="featured-stats">
-            <div><strong>19+</strong><span>Games</span></div>
+            <div><strong>23+</strong><span>Games</span></div>
             <div><strong>FREE</strong><span>To Play</span></div>
             <div><strong>WEB</strong><span>Browser</span></div>
         </div>
@@ -106,9 +89,6 @@
 
 </section>
 
-<!-- =====================================================
-     TRENDING
-===================================================== -->
 
 <section class="trending-section">
 
@@ -166,9 +146,6 @@
 
 </section>
 
-<!-- =====================================================
-     ALL GAMES
-===================================================== -->
 
 <section class="games-section" id="games">
 
@@ -177,12 +154,11 @@
             <span class="section-label">GAME LIBRARY</span>
             <h2>🎮 All Games</h2>
         </div>
-        <button class="small-link" id="viewAllBtn">View all →</button>
+        <button class="small-link" onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">View all →</button>
     </div>
 
     <div class="games-grid" id="gamesGrid">
 
-        <!-- 1 -->
         <div class="game-card reveal">
             <div class="game-cover snake-bg">🐍<span class="game-tag">ARCADE</span></div>
             <div class="game-info">
@@ -192,7 +168,6 @@
             </div>
         </div>
 
-        <!-- 2 -->
         <div class="game-card reveal">
             <div class="game-cover ttt-bg">❌⭕<span class="game-tag">PUZZLE</span></div>
             <div class="game-info">
@@ -202,7 +177,6 @@
             </div>
         </div>
 
-        <!-- 3 -->
         <div class="game-card reveal">
             <div class="game-cover tetris-bg">🧱<span class="game-tag">PUZZLE</span></div>
             <div class="game-info">
@@ -212,7 +186,6 @@
             </div>
         </div>
 
-        <!-- 4 -->
         <div class="game-card reveal">
             <div class="game-cover pong-bg">🏓<span class="game-tag">ARCADE</span></div>
             <div class="game-info">
@@ -222,7 +195,6 @@
             </div>
         </div>
 
-        <!-- 5 -->
         <div class="game-card reveal">
             <div class="game-cover memory-bg">🧠<span class="game-tag">BRAIN</span></div>
             <div class="game-info">
@@ -232,7 +204,6 @@
             </div>
         </div>
 
-        <!-- 6 -->
         <div class="game-card reveal">
             <div class="game-cover runner-bg">🏃<span class="game-tag">ACTION</span></div>
             <div class="game-info">
@@ -242,17 +213,6 @@
             </div>
         </div>
 
-        <!-- 7 -->
-        <div class="game-card reveal">
-            <div class="game-cover game2048-bg">🔢<span class="game-tag">PUZZLE</span></div>
-            <div class="game-info">
-                <h3>2048</h3>
-                <p>Reach the 2048 tile</p>
-                <button class="play-btn" onclick="openGame('games/2048.html')">▶ Play</button>
-            </div>
-        </div>
-
-        <!-- 8 -->
         <div class="game-card reveal">
             <div class="game-cover mine-bg">💣<span class="game-tag">BRAIN</span></div>
             <div class="game-info">
@@ -262,7 +222,6 @@
             </div>
         </div>
 
-        <!-- 9 -->
         <div class="game-card reveal">
             <div class="game-cover flappy-bg">🐦<span class="game-tag">ARCADE</span></div>
             <div class="game-info">
@@ -272,7 +231,6 @@
             </div>
         </div>
 
-        <!-- 10 -->
         <div class="game-card reveal">
             <div class="game-cover car-bg">🚗<span class="game-tag">RACING</span></div>
             <div class="game-info">
@@ -282,7 +240,6 @@
             </div>
         </div>
 
-        <!-- 11 -->
         <div class="game-card reveal">
             <div class="game-cover bike-bg">🏍️<span class="game-tag">RACING</span></div>
             <div class="game-info">
@@ -292,7 +249,6 @@
             </div>
         </div>
 
-        <!-- 12 -->
         <div class="game-card reveal">
             <div class="game-cover supercar-bg">🏎️<span class="game-tag">3D</span></div>
             <div class="game-info">
@@ -302,7 +258,6 @@
             </div>
         </div>
 
-        <!-- 13 -->
         <div class="game-card reveal">
             <div class="game-cover adventure-bg">🗺️<span class="game-tag">ADVENTURE</span></div>
             <div class="game-info">
@@ -312,7 +267,6 @@
             </div>
         </div>
 
-        <!-- 14 -->
         <div class="game-card reveal">
             <div class="game-cover alien-bg">👽<span class="game-tag">ACTION</span></div>
             <div class="game-info">
@@ -322,17 +276,6 @@
             </div>
         </div>
 
-        <!-- 15 -->
-        <div class="game-card reveal">
-            <div class="game-cover archery-bg">🏹<span class="game-tag">SKILL</span></div>
-            <div class="game-info">
-                <h3>Archery Challenge</h3>
-                <p>Test your accuracy</p>
-                <button class="play-btn" onclick="openGame('games/ArcheryChallenge.html')">▶ Play</button>
-            </div>
-        </div>
-
-        <!-- 16 -->
         <div class="game-card reveal">
             <div class="game-cover devil-bg">😈<span class="game-tag">ACTION</span></div>
             <div class="game-info">
@@ -342,7 +285,6 @@
             </div>
         </div>
 
-        <!-- 17 -->
         <div class="game-card featured-card reveal">
             <div class="game-cover spider-bg">🕷️<span class="game-tag">FEATURED</span></div>
             <div class="game-info">
@@ -352,17 +294,6 @@
             </div>
         </div>
 
-        <!-- 18 -->
-        <div class="game-card reveal">
-            <div class="game-cover tower-bg">🏰<span class="game-tag">STRATEGY</span></div>
-            <div class="game-info">
-                <h3>Tower Defense</h3>
-                <p>Defend your base</p>
-                <button class="play-btn" onclick="openGame('games/towerDefense.html')">▶ Play</button>
-            </div>
-        </div>
-
-        <!-- 19 -->
         <div class="game-card reveal">
             <div class="game-cover zombie-bg">🧟<span class="game-tag">SURVIVAL</span></div>
             <div class="game-info">
@@ -372,13 +303,73 @@
             </div>
         </div>
 
+        <div class="game-card reveal">
+            <div class="game-cover flappy-bg">🐦<span class="game-tag">ARCADE</span></div>
+            <div class="game-info">
+                <h3>Angry Birds</h3>
+                <p>Launch and destroy</p>
+                <button class="play-btn" onclick="openGame('games/Angrybrid.html')">▶ Play</button>
+            </div>
+        </div>
+
+        <div class="game-card reveal">
+            <div class="game-cover tetris-bg">🧱<span class="game-tag">ARCADE</span></div>
+            <div class="game-info">
+                <h3>Breakout</h3>
+                <p>Break the blocks and score</p>
+                <button class="play-btn" onclick="openGame('games/breakout.html')">▶ Play</button>
+            </div>
+        </div>
+
+        <div class="game-card reveal">
+            <div class="game-cover memory-bg">🍬<span class="game-tag">PUZZLE</span></div>
+            <div class="game-info">
+                <h3>Candy Crush</h3>
+                <p>Match delicious candies</p>
+                <button class="play-btn" onclick="openGame('games/CandyCrush.html')">▶ Play</button>
+            </div>
+        </div>
+
+        <div class="game-card reveal">
+            <div class="game-cover ttt-bg">♟️<span class="game-tag">STRATEGY</span></div>
+            <div class="game-info">
+                <h3>Chess</h3>
+                <p>Classic strategy game</p>
+                <button class="play-btn" onclick="openGame('games/Chess.html')">▶ Play</button>
+            </div>
+        </div>
+
+        <div class="game-card reveal">
+            <div class="game-cover car-bg">🏔️<span class="game-tag">RACING</span></div>
+            <div class="game-info">
+                <h3>Hill Climbing</h3>
+                <p>Drive over the hills</p>
+                <button class="play-btn" onclick="openGame('games/HillClimbing.html')">▶ Play</button>
+            </div>
+        </div>
+
+        <div class="game-card reveal">
+            <div class="game-cover devil-bg">👊<span class="game-tag">ACTION</span></div>
+            <div class="game-info">
+                <h3>Shadow Fight</h3>
+                <p>Fight in the shadows</p>
+                <button class="play-btn" onclick="openGame('games/ShadowFight.html')">▶ Play</button>
+            </div>
+        </div>
+
+        <div class="game-card reveal">
+            <div class="game-cover runner-bg">🍄<span class="game-tag">ADVENTURE</span></div>
+            <div class="game-info">
+                <h3>Super Mario</h3>
+                <p>Jump and collect coins</p>
+                <button class="play-btn" onclick="openGame('games/SuperMario.html')">▶ Play</button>
+            </div>
+        </div>
+
     </div>
 
 </section>
 
-<!-- =====================================================
-     CATEGORIES
-===================================================== -->
 
 <section class="categories-section" id="categories">
 
@@ -398,9 +389,6 @@
 
 </section>
 
-<!-- =====================================================
-     ABOUT
-===================================================== -->
 
 <section class="about-section" id="about">
 
@@ -410,7 +398,7 @@
         <p>GameX is a browser gaming platform where you can discover and play different games directly from your browser.</p>
 
         <div class="about-features">
-            <div><strong>19+</strong><span>Games</span></div>
+            <div><strong>23+</strong><span>Games</span></div>
             <div><strong>0</strong><span>Downloads</span></div>
             <div><strong>100%</strong><span>Browser</span></div>
         </div>
@@ -420,9 +408,6 @@
 
 </main>
 
-<!-- =====================================================
-     FOOTER
-===================================================== -->
 
 <footer>
     <div class="footer-logo">🎮 GameX</div>
@@ -430,16 +415,10 @@
     <span>© 2026 GameX</span>
 </footer>
 
-<!-- =====================================================
-     SCRIPTS
-===================================================== -->
 
 <script>
 function openGame(gamePath) {
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        window.location.href = gamePath;
-    }, 300);
+    window.location.href = gamePath;
 }
 </script>
 
